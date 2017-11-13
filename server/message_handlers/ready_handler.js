@@ -91,7 +91,7 @@ exports.readyHandler = (socket, io, handlers) => {
       return redisClient.delAsync(gameUtils.robBankersKey(msg.roomNo)).then(
         res => {
           if (!res) {
-            logger.error("reset robBankers fail");
+            //logger.error("reset robBankers fail");
           }  else {
             logger.debug("reset robBankers success");
           }
@@ -108,7 +108,7 @@ exports.readyHandler = (socket, io, handlers) => {
       return redisClient.delAsync(gameUtils.betPlayersKey(msg.roomNo)).then(
         res => {
           if (!res) {
-            logger.error("reset batPlayers fail");
+            //logger.error("reset batPlayers fail");
           } else {
             logger.debug("reset batPlayers success");
           }
@@ -121,7 +121,7 @@ exports.readyHandler = (socket, io, handlers) => {
       return redisClient.delAsync(gameUtils.showcardPlayersKey(msg.roomNo)).then(
         res => {
           if (!res) {
-            logger.error("reset showcardPlayers fail");
+            //logger.error("reset showcardPlayers fail");
           } else {
             logger.debug("reset showcardPlayers success");
           }
@@ -138,7 +138,7 @@ exports.readyHandler = (socket, io, handlers) => {
       return redisClient.delAsync(gameUtils.readyPlayersKey(msg.roomNo)).then(
         res => {
           if (!res) {
-            logger.error("reset readyPlayers fail");
+            //logger.error("reset readyPlayers fail");
           } else {
             logger.debug("reset readyPlayers success");
           }
@@ -186,7 +186,7 @@ exports.readyHandler = (socket, io, handlers) => {
 
           })
       } else {
-        return Promise.resolve({isNeedSet: false, game: game});
+        return Promise.resolve({isNeedSet: false, game: checkResult.game});
       }
     }
 

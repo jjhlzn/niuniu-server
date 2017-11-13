@@ -149,7 +149,7 @@ function robClick(isRob) {
   let robReq = {
     roomNo: roomNo,
     userId: userId,
-    isRob: isRob
+    isRob: isRob ? 1 : 0
   }
   socket.emit('RobBanker', robReq, (msg) => {
     console.log("has sent rob req sucess");

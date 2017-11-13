@@ -48,11 +48,17 @@ module.exports = {
     return 'readyplayers:' + roomNo;
   },
 
-  robBankerTimeout: 6000,
-  betTimeout: 6000,
-  showCardTimeout: 6000,
-  readyTimeout: 6000,
+  /*
+  robBankerTimeout: 600000,
+  betTimeout: 600000,
+  showCardTimeout: 600000,
+  readyTimeout: 600000,
+  */
 
+  robBankerTimeout: 1000 * 60 * 60 * 24 * 10, //10天
+  betTimeout:   1000 * 60 * 60 * 24 * 10,
+  showCardTimeout:   1000 * 60 * 60 * 24 * 10,
+  readyTimeout:   1000 * 60 * 60 * 24 * 10,
 
   currentRoundPlayerIds: currentRoundPlayerIds,
   currentRound: currentRound,

@@ -22,7 +22,9 @@ function chooseBanker(game, robBankerHash) {
   let playerIds = _.keys(robBankerHash);
   let robBankerIds = [];
   playerIds.forEach(playerId => {
-    if (robBankerHash[playerId]) {
+    if (robBankerHash[playerId] == 1) {
+      logger.debug("robBankerHash[playerId] = " + robBankerHash[playerId]);
+      logger.debug(playerId + " rob banker");
       robBankerIds.push(playerId);
     }
   });
@@ -38,11 +40,12 @@ function chooseBanker(game, robBankerHash) {
     banker = robBankerIds[0]
   }
 
+  logger.debug("robBankerPalyers: " + robBankerIds);
   logger.debug(banker + " become to banker");
   
   return {
     banker: banker,
-    robBankerCount: robBankerIds.length
+    robBankerPlayers: robBankerIds
   }
 }
 
@@ -119,7 +122,7 @@ exports.robBankerHandler = (socket, io, handlers) => {
 
     //小心这里可能有并发问题，当抢庄超时发生的时候，几乎同时会进行默认抢庄的请求。这时只能进行一次选择庄家
     //以及发送一次跳转到下一个状态的通知。
-    let sendGoToSecondDealNotify = (checkResult) => {
+    let sendGoToChooseBankerNotify = (checkResult) => {
       if (!checkResult.isNeedSend) {
         return Promise.resolve({isNeedSet: false, game: checkResult.game});
       }
@@ -143,7 +146,7 @@ exports.robBankerHandler = (socket, io, handlers) => {
                 //发送
                 io.to(msg.roomNo).emit(messages.GoToChooseBanker, {
                   banker: chooseResult.banker,
-                  robBankerCount: chooseResult.robBankerCount
+                  robBankerPlayers: chooseResult.robBankerPlayers
                 });
 
                 delete locked[msg.roomNo];
@@ -164,7 +167,7 @@ exports.robBankerHandler = (socket, io, handlers) => {
       .then(setRobBankerOrNot)
       .then(sendSomePlayerRobBankerNotify)
       .then(checkIsNeedGoToSecondDeal)
-      .then(sendGoToSecondDealNotify)
+      .then(sendGoToChooseBankerNotify)
       .then(handlers.createBetTimer(socket, io, handlers))
       .catch(createFailHandler(Ack));
   }
