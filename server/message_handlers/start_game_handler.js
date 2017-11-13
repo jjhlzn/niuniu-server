@@ -68,7 +68,8 @@ exports.startGameHandler = (socket, io, handlers) => {
       });
       io.to(msg.roomNo).emit(messages.GoToFirstDeal, {
         cardsDict: cardsDict,
-        betsDict: betsDict
+        betsDict: betsDict,
+        roundNo: 1
       })
       logger.debug('Sent GoToFirstDeal');
       return Promise.resolve({isNeedSet: true, game: game});

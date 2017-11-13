@@ -160,6 +160,7 @@ exports.readyHandler = (socket, io, handlers) => {
               createNewRound(game);
               return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game))
                 .then( res => {
+                  delete locked[msg.roomNo];
                   if (!res) {
                     return Promise.reject("保存Game失败");
                   }
@@ -174,10 +175,11 @@ exports.readyHandler = (socket, io, handlers) => {
 
                   io.to(msg.roomNo).emit(messages.GoToFirstDeal, {
                     cardsDict: cardsDict,
-                    betsDict: betsDict
-                  })
+                    betsDict: betsDict,
+                    roundNo: game.currentRoundNo
+                  }) 
                   logger.debug('Sent GoToFirstDeal');
-                  delete locked[msg.roomNo];
+                  
                   return Promise.resolve({isNeedSet: true, game: game});
                 })
             }  else {

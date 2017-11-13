@@ -21,7 +21,7 @@ let getGame = (roomNo) => {
 
 let createFailHandler = (Ack) => {
   return (error) => {
-    logger.error("ERROR: " + error);
+    logger.error("ERROR: " +error);
     
     if (Ack) 
       Ack({status: -1, errorMessage: error});

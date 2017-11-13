@@ -139,6 +139,7 @@ exports.robBankerHandler = (socket, io, handlers) => {
             logger.debug("game.rounds[game.rounds.length - 1].banker = " + game.rounds[game.rounds.length - 1].banker);
             return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game))
               .then( res => {
+                delete locked[msg.roomNo];
                 if (!res) {
                   return Promise.reject("update game error, res = " + res);
                 }
@@ -149,7 +150,7 @@ exports.robBankerHandler = (socket, io, handlers) => {
                   robBankerPlayers: chooseResult.robBankerPlayers
                 });
 
-                delete locked[msg.roomNo];
+               
 
                 return Promise.resolve({isNeedSet: true, game: game});
               })

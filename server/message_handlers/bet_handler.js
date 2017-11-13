@@ -65,7 +65,7 @@ exports.betHandler = (socket, io, handlers) => {
           })
 
           logger.debug("isNeedToSendDealNotify = " + isNeedSend);
-          return Promise.resolve({isNeedSend: isNeedSend, game: game});
+          return Promise.resolve({isNeedSend: isNeedSend, game: game, betPlayerHash: betPlayerHash});
         });
     }
 
@@ -75,8 +75,15 @@ exports.betHandler = (socket, io, handlers) => {
           if (game.state == gameState.Bet && !locked[msg.roomNo]) {
             locked[msg.roomNo] = true;
             game.state = gameState.CheckCard;
+            let round = game.rounds[game.rounds.length - 1];
+
+            //设置bet
+            _.keys(round.players).forEach( playerId => {
+              round.players[playerId].bet = checkResult.betPlayerHash[playerId];
+            })
             return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game))
               .then(res => {
+                delete locked[msg.roomNo];
                 if (!res) {
                   return Promise.reject("设置Game失败");
                 }
@@ -86,12 +93,12 @@ exports.betHandler = (socket, io, handlers) => {
                 playerIds.forEach( playerId => {
                   cardsDict[playerId] = playerInfos[playerId]['cards'][4];
                 })
-
                 io.to(msg.roomNo).emit(messages.GoToSecondDeal, {
                   cardsDict: cardsDict
                 });
+                logger.debug("Sent GoToSecondDeal");
 
-                delete locked[msg.roomNo];
+                
                 return Promise.resolve({isSetTimer: true, game: checkResult.game});
               })
           } else {

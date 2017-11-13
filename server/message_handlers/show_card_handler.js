@@ -101,13 +101,18 @@ exports.showcardHandler = (socket, io, handlers) => {
               locked[msg.roomNo] = true;
               game.state = gameState.CheckCard;
             
-              let playerIds = currentRoundPalyerIds(checkResult.game);
-              let playerInfos = currentRoundPlayerInfos(checkResult.game);
+              let playerIds = currentRoundPalyerIds(game);
+              let playerInfos = currentRoundPlayerInfos(game);
       
+              logger.debug("before compute win or loss")
+              //计算输赢
+              gameUtils.computeWinOrLoss(game);
+              logger.debug("after compute win or loss")
+
               let resultDict = {};
               playerIds.forEach(playerId => {
                 resultDict[playerId] = playerInfos[playerId].winOrLoss;
-              })
+              });
       
               //保存游戏的状态
               let isNeedSetTimer = false;
@@ -120,6 +125,8 @@ exports.showcardHandler = (socket, io, handlers) => {
                 isNeedSetTimer = false;
               }
               
+              logger.debug("resultDict: " + JSON.stringify(resultDict));
+              logger.debug("scores: " + JSON.stringify(game.scores));
               return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game))
                 .then( res => {
                   delete locked[msg.roomNo];
@@ -127,7 +134,8 @@ exports.showcardHandler = (socket, io, handlers) => {
                     return Promise.reject("保存Game时出错, res = " + res);
                   } 
                   io.to(msg.roomNo).emit(messages.GoToCompareCard, {
-                    resultDict: resultDict
+                    resultDict: resultDict,
+                    scoreDict: game.scores
                   });
                   logger.debug("Sent GoToCompareCard");
                   return Promise.resolve({isNeedSet:isNeedSetTimer, game: game});

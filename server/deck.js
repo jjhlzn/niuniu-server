@@ -7,15 +7,20 @@ const logger = require('./utils/logger').logger(path.basename(__filename));
 
 let cardsOfDeck = [];
 cardsOfDeck = generateDeckCards();
+let cardsDict = {};
+for(var i = 0; i < cardsOfDeck.length; i++) {
+  cardsDict[cardsOfDeck[i]] = cardsOfDeck.length - i;
+}
 
 function generateDeckCards() {
 
-  let types = ['diamonds', 'clubs', 'spades', 'hearts'];
-  let cardPoints = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king', 'ace'];
+  let types = ['spades', 'hearts', 'clubs', 'diamonds'];
+  let cardPoints = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'].reverse();
 
   let cards = [];
-  types.forEach ( type => {
-    cardPoints.forEach ( cardPoint => {
+  
+  cardPoints.forEach ( cardPoint => {
+    types.forEach ( type => {
       cards.push(type + '_' + cardPoint);
     });
   });
@@ -120,7 +125,7 @@ function deal(game) {
       niu: result.niu,
       cardSequences: result.cardSequences,
       multiple: result.multiple,
-      winOrLoss: 10
+      winOrLoss: 0
     };
     round['players'][player] = playerDict;
   });
@@ -128,6 +133,18 @@ function deal(game) {
   return returnObj;
 }
 
+function compare(card1, card2) {
+  var card1Value = cardsDict[card1], card2Value = cardsDict[card2];
+  if (card1Value > card2Value) {
+    return 1;
+  }  else if (card1Value < card2Value) {
+    return -1;
+  } else {
+    return 0
+  }
+}
+
 module.exports = {
-  deal: deal
+  deal: deal,
+  compare: compare
 }
