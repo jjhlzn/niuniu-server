@@ -1,3 +1,5 @@
+
+
 "use strict";
 
 const redisClient = require('../db/redis_connect').connect();
@@ -23,8 +25,10 @@ let createFailHandler = (Ack) => {
   return (error) => {
     logger.error("ERROR: " +error);
     
-    if (Ack) 
-      Ack({status: -1, errorMessage: error});
+    if (Ack) {
+      logger.debug("Sent Error Ack message");
+      Ack({status: -1, errorMessage: JSON.stringify(error)});
+    }
   }
 }
 

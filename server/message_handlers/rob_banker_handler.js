@@ -94,11 +94,12 @@ exports.robBankerHandler = (socket, io, handlers) => {
     let sendSomePlayerRobBankerNotify = (game) => {
       
       io.to(msg.roomNo).emit(messages.SomePlayerRobBanker, msg);
+      logger.debug("Sent SomePlayerRobBanker");
       return Promise.resolve(game);
     }
 
     
-    let checkIsNeedGoToSecondDeal = (game) => {
+    let checkIsNeedGoToChooseBanker = (game) => {
       let round = game.rounds[game.rounds.length - 1];
       let playerIds = _.keys(round['players']);
       return redisClient.hgetallAsync(gameUtils.robBankersKey(msg.roomNo)).then(
@@ -150,8 +151,6 @@ exports.robBankerHandler = (socket, io, handlers) => {
                   robBankerPlayers: chooseResult.robBankerPlayers
                 });
 
-               
-
                 return Promise.resolve({isNeedSet: true, game: game});
               })
           } else {
@@ -167,7 +166,7 @@ exports.robBankerHandler = (socket, io, handlers) => {
       .then(checkGameState)
       .then(setRobBankerOrNot)
       .then(sendSomePlayerRobBankerNotify)
-      .then(checkIsNeedGoToSecondDeal)
+      .then(checkIsNeedGoToChooseBanker)
       .then(sendGoToChooseBankerNotify)
       .then(handlers.createBetTimer(socket, io, handlers))
       .catch(createFailHandler(Ack));

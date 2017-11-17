@@ -43,6 +43,7 @@ exports.betHandler = (socket, io, handlers) => {
           if (!res) {
             return Promise.reject("设置下注失败：userId = " + msg.userId);
           }
+          io.to(msg.roomNo).emit(messages.SomePlayerBet, msg);
           return Promise.resolve(game);
         });
     }
@@ -111,7 +112,7 @@ exports.betHandler = (socket, io, handlers) => {
     }
 
     let done = () => {
-      io.to(msg.roomNo).emit(messages.SomePlayerBet, msg);
+      
       if (Ack)
         Ack({status: 0});
     }

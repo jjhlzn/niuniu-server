@@ -19,7 +19,7 @@ let joinRoomReq = {
 };
 
 socket.emit("JoinRoom", joinRoomReq, (msg) => {
-  onselect.log("join success");
+  console.log("join success");
 });
 
 $('#startGameButton').click( () => {

@@ -51,7 +51,7 @@ const logger = require('./server/utils/logger').logger(path.basename(__filename)
 app.use(express.static('./clients'));
 app.use(express.static('node_modules'));
 
-http.listen(8000);
+http.listen(3000);
 
 function handler (req, res) {
  fs.readFile(__dirname + '/clients/index.html',
