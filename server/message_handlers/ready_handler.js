@@ -26,6 +26,7 @@ let createNewRound = (game) => {
     players: {}
   };
   game.rounds.push(round);
+  
   game.state = gameState.RobBanker; //服务器没有FirstDeal的状态
   deck.deal(game);
 }
@@ -68,20 +69,23 @@ exports.readyHandler = (socket, io, handlers) => {
             return Promise.reject("获取readyPlayerHash失败");
           }
 
-          let playerIds = currentRoundPalyerIds(game);
-          let isNeedSend = true;
-          playerIds.forEach( playerId => {
-            if (!readyPlayerHash[playerId]) {
-              logger.debug(playerId + "isn't ready");
-              isNeedSend = false;
-            }
-          });
-
-          logger.debug("isNeedSend = " + isNeedSend);
-          return Promise.resolve({isNeedSend: isNeedSend, game: game});
+          return redisClient.hgetallAsync(gameUtils.sitdownPlayersKey(msg.roomNo))  
+            .then( sitdownPlayerHash => {
+              let playerIds = _.keys(sitdownPlayerHash);
+              let isNeedSend = true;
+              playerIds.forEach( playerId => {
+                if (!readyPlayerHash[playerId]) {
+                  logger.debug(playerId + "isn't ready");
+                  isNeedSend = false;
+                }
+              });
+              logger.debug("isNeedSend = " + isNeedSend);
+              logger.debug("sitdownPlayerHash: " + JSON.stringify(sitdownPlayerHash));
+              game.sitdownPlayers = sitdownPlayerHash;
+              return Promise.resolve({isNeedSend: isNeedSend, game: game});
+            });
         });
     }
-
 
     let resetRobBankers = (checkResult) => {
       if (!checkResult.isNeedSend) {
@@ -148,12 +152,21 @@ exports.readyHandler = (socket, io, handlers) => {
       )
     }
 
+    let getSitdownPlayers = (roomNo) => {
+      return redisClient.hgetallAsync(gameUtils.sitdownPlayersKey(roomNo))
+        .then( hash => {
+          return hash;
+        })
+    }
 
     let sendGoToFirstDealNotify = (checkResult) => {
-      logger.debug('sendGoToFirstDealNotify called');
+      
       if (checkResult.isNeedSend) {
-        return getGame(msg.roomNo)
-          .then( game => {
+        return Promise.all([getGame(msg.roomNo), getSitdownPlayers(msg.roomNo)])
+          .then( hashs => {
+            let game = hashs[0];
+            let sitdownPlayers = hashs[1];
+            game.sitdownPlayers = sitdownPlayers;
             if (!locked[msg.roomNo]) {
               locked[msg.roomNo] = true;
 
@@ -216,24 +229,27 @@ exports.createReadyTimer = (socket, io, handlers) => {
         getGame(checkResult.game.roomNo)
           .then( game => {
             redisClient.hgetallAsync(gameUtils.readyPlayersKey(game.roomNo))
-            .then( readyPlayerHash => {
-                if (!readyPlayerHash) {
-                  readyPlayerHash = {};
-                }
-  
-                let playerIds = currentRoundPalyerIds(checkResult.game);
-                logger.debug("playerIds = " + playerIds);
-                playerIds.forEach( playerId => {
-                  if (!readyPlayerHash[playerId]) {
-                    //发送超时的准备
-                    let readyReq = {
-                      userId: playerId,
-                      roomNo: game.roomNo
-                    };
-                    handlers['readyHandler'](socket, io, handlers)(readyReq);
+              .then( readyPlayerHash => {
+                  if (!readyPlayerHash) {
+                    readyPlayerHash = {};
                   }
-                });
-            });
+    
+                  redisClient.hgetallAsync(gameUtils.sitdownPlayersKey(game.roomNo))
+                    .then( sitdownPlayerHash => {
+                      let playerIds = _.keys(sitdownPlayerHash);
+                      logger.debug("playerIds = " + playerIds);
+                      playerIds.forEach( playerId => {
+                        if (!readyPlayerHash[playerId]) {
+                          //发送超时的准备
+                          let readyReq = {
+                            userId: playerId,
+                            roomNo: game.roomNo
+                          };
+                          handlers['readyHandler'](socket, io, handlers)(readyReq);
+                        }
+                      });
+                    });
+              });
           })
       }, gameUtils.readyTimeout);
     }

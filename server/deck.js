@@ -1,3 +1,5 @@
+
+
 "use strict";
 
 const _ = require('underscore');
@@ -110,7 +112,9 @@ function deal(game) {
   logger.debug("begin deal");
   let cards = shuffle();
   let round = game.rounds[game.rounds.length - 1];
+  
   let players = _.keys(game.sitdownPlayers);
+  logger.debug("game.sitdownPlayers: " + JSON.stringify(game.sitdownPlayers));
   let returnObj = {};
   players.forEach( (player, i) => {
     let myCards = [cards[i * 5 + 0], cards[i * 5 +1], 

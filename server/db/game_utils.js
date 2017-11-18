@@ -120,10 +120,10 @@ module.exports = {
   },
 
   
-  robBankerTimeout: 3000,
-  betTimeout: 3000,
-  showCardTimeout: 3000,
-  readyTimeout: 7000,
+  robBankerTimeout: 8000,
+  betTimeout: 8000,
+  showCardTimeout: 8000,
+  readyTimeout: 8000,
   
   /*
   robBankerTimeout: 1000 * 60 * 60 * 24 * 10, //10天
