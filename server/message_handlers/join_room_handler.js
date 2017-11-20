@@ -37,7 +37,8 @@ exports.joinRoomHandler = (socket, io) => {
         }
 
         logger.debug("sitdownPlayes: " +JSON.stringify(playerHash));
-        return Promise.resolve(playerHash);
+        game.sitdownPlayers = playerHash;
+        return Promise.resolve(game);
       });
     }
 
