@@ -148,8 +148,7 @@ exports.joinRoomHandler = (socket, io) => {
         game.banker = "";
         //TODO：删除本局的其他用户的关于牌的信息
         if (game.state == gameState.BeforeStart) {
-          return getSitdownPlayers(game).then(sitdownPlayerHash => {
-            game.sitdownPlayers = sitdownPlayerHash
+          return getSitdownPlayers(game).then(game => {
             return Promise.resolve(game)
           })
         } else if (game.state == gameState.RobBanker) {
