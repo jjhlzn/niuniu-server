@@ -36,8 +36,9 @@ exports.resetRoomHandler = (socket) => {
 
     let resetGame = (game) => {
       game.state = gameState.BeforeStart;
+      game.creater = "7654321";
       game.currentRoundNo = 1;
-      game.totalRoundCount = 20;
+      game.totalRoundCount = 1;
       game.players = [];
       game.sitdownPlayers = {};
       game.rounds = [];

@@ -26,5 +26,6 @@ module.exports = {
   ShowCard: 'ShowCard',
   SomePlayerShowCard: 'SomePlayerShowCard',
   SomePlayerReady: 'SomePlayerReady',
-  Ready: 'Ready'
+  Ready: 'Ready',
+  DismissRoom: 'DismissRoom'
 }

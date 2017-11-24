@@ -47,6 +47,7 @@ exports.startGameHandler = (socket, io, handlers) => {
       };
       game.rounds.push(round);
       game.state = gameState.RobBanker; //服务器没有FirstDeal的状态
+      game.isPlayed = true;
       deck.deal(game);
       //保存游戏的状态
       return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game)).then( res => {

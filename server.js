@@ -36,10 +36,15 @@ const createShowcardTimer = require('./server/message_handlers/show_card_handler
 handlers['createShowcardTimer'] = createShowcardTimer;
 
 
+const checkuserInGameHandle = require('./server/http_handlers/check_user_in_game_handler').handle;
+const createRoomHandle = require('./server/http_handlers/create_room_handler').handle;
 
 const messages = require('./server/messages');
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 var http = require('http').Server(app);
 const io = require('socket.io')(http);
 
@@ -48,23 +53,13 @@ const logger = require('./server/utils/logger').logger(path.basename(__filename)
 
 //logger.debug("readyHandler = " + readyHandler)
 
+app.use('/checkuseringame', checkuserInGameHandle);
+app.use('/createroom', createRoomHandle);
 app.use(express.static('./clients'));
 app.use(express.static('node_modules'));
 
+
 http.listen(3000);
-
-function handler (req, res) {
- fs.readFile(__dirname + '/clients/index.html',
- function (err, data) {
-   if (err) {
-     res.writeHead(500);
-     return res.end('Error loading index.html');
-   }
-
-   res.writeHead(200);
-   res.end(data);
- });
-}
 
 io.on('connection', socket => {
   socket.on(messages.JoinRoom, joinRoomHandler(socket, io));
@@ -76,7 +71,5 @@ io.on('connection', socket => {
   socket.on(messages.Bet, betHandler(socket, io, handlers));
   socket.on(messages.ShowCard, showcardHandler(socket, io, handlers));
   socket.on(messages.Ready, readyHandler(socket, io, handlers));
-
-  
 });
 

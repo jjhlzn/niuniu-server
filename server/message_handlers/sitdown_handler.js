@@ -27,7 +27,7 @@ exports.sitdownHandler = (socket) => {
 
               logger.debug("sitdownPlayes: " +JSON.stringify(playerHash));
               if (playerHash[msg.userId]) {
-                return Promise.reject('Player ' + msg.seat + ' has sit down');
+                return Promise.reject('Player ' + msg.userId + ' has sit down');
               }
       
               let seatNos = _.values(playerHash);

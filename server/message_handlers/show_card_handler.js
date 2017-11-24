@@ -10,11 +10,44 @@ const gameState = require('../game_state');
 const currentRoundPalyerIds = require('../db/game_utils').currentRoundPlayerIds;
 const currentRoundPlayerInfos = require('../db/game_utils').currentRoundPlayerInfos;
 const hasNextRound = require('../db/game_utils').hasNextRound;
+const moment = require('moment');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 
-function checkMessage(msg) {
-  return null;
+function getBiggerWinnersAndLosers(scores) {
+  let keys = _.keys(scores);
+  let values = _.values(scores);
+  if (keys.length <= 1) {
+    return {biggestWinners: [], biggestLosers: []};
+  }
+
+  let sortedScores = _.values(scores);
+  let biggest = sortedScores[sortedScores.length - 1];
+  let smallest = sortedScores[0];
+
+  let biggestWinners = [];
+  if (biggest > 0) {
+     biggestWinners = _.zip(keys, values).filter(a => a[1] === biggest).map(a => a[0]);
+  }
+
+  let biggestLosers = [];
+  if (smallest < 0) {
+    biggestLosers =  _.zip(keys, values).filter(a => a[1] === smallest).map(a => a[0]);
+  }
+
+  return {biggestWinners: biggestWinners, biggestLosers: biggestLosers};
+}
+
+function makeGameOverResponse(game) {
+  //scores
+  let response = {};
+  response.scores = game.scores;
+  let result = getBiggerWinnersAndLosers(response.scores);
+  response.bigWinners = result.biggestWinners;
+  response.bigLosers = result.biggestLosers;
+  response.isPlayed = game.isPlayed ? true : false;
+  response.gameOverTime = game.gameOverTime;
+  return game;
 }
 
 let locked = {};
@@ -27,11 +60,6 @@ exports.showcardHandler = (socket, io, handlers) => {
 
   return (msg, Ack) => {
     logger.debug("Receive ShowCard: " + JSON.stringify(msg));
-
-    if (checkMessage() != null) {
-      Ack({status: -1, errorMessage: '参数错误'});
-      return;
-    }
 
     let setShowCard = (game) => {
       return redisClient.hsetAsync(gameUtils.showcardPlayersKey(msg.roomNo), msg.userId, true)
@@ -116,13 +144,16 @@ exports.showcardHandler = (socket, io, handlers) => {
       
               //保存游戏的状态
               let isNeedSetTimer = false;
+              let isGameOver = false;
               if (hasNextRound(game)) {
                 game.state = gameState.WaitForNextRound;
                 game.currentRoundNo++;
                 isNeedSetTimer = true;
               } else {
                 game.state = gameState.GameOver;
+                game.gameOverTime = moment().format('YYYY-MM-DD HH:mm:ss')
                 isNeedSetTimer = false;
+                isGameOver = true;
               }
               
               logger.debug("resultDict: " + JSON.stringify(resultDict));
@@ -132,12 +163,19 @@ exports.showcardHandler = (socket, io, handlers) => {
                   delete locked[msg.roomNo];
                   if (!res) {
                     return Promise.reject("保存Game时出错, res = " + res);
-                  } 
-                  io.to(msg.roomNo).emit(messages.GoToCompareCard, {
-                    resultDict: resultDict,
-                    scoreDict: game.scores
-                  });
-                  logger.debug("Sent GoToCompareCard");
+                  }
+                  
+                  if (isGameOver) {
+                    let resp = makeGameOverResponse(game);
+                    io.to(msg.roomNo).emit(messages.GoToGameOver, _.extend(resp, {resultDict: resultDict, gameOverAfterRound: true}));
+                    logger.debug("Sent GameOver Notify");
+                  } else {
+                    io.to(msg.roomNo).emit(messages.GoToCompareCard, {
+                      resultDict: resultDict,
+                      scoreDict: game.scores
+                    });
+                    logger.debug("Sent GoToCompareCard");
+                  }
                   return Promise.resolve({isNeedSet:isNeedSetTimer, game: game});
             })
           } else {
@@ -148,6 +186,8 @@ exports.showcardHandler = (socket, io, handlers) => {
         return Promise.resolve({isNeedSet: false, game: checkResult.game});
       }
     };
+
+
 
     getGame(msg.roomNo)
       .then(setShowCard)
