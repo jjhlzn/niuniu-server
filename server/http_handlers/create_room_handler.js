@@ -1,5 +1,3 @@
-
-
 "use strict";
 
 const gameState = require('../game_state');
@@ -63,7 +61,7 @@ exports.handle = (req, res) => {
   }
 
   let setGameServer = (game) => {
-    game.serverUrl = "http://localhost:3000";
+    game.serverUrl =  "http://localhost:3000";// "http://192.168.31.175:3000";
     return game;
   }
 

@@ -35,6 +35,12 @@ handlers['showcardHandler'] = showcardHandler;
 const createShowcardTimer = require('./server/message_handlers/show_card_handler').createShowcardTimer;
 handlers['createShowcardTimer'] = createShowcardTimer;
 
+const dismissRoomHanler = require('./server/message_handlers/dismiss_room_handler').dismissRoomHanler;
+handlers['dismissRoomHanler'] = dismissRoomHanler;
+
+const leaveRoomHandler = require('./server/message_handlers/leave_room_handler').leaveRoomHandler;
+handlers['leaveRoomHandler'] = leaveRoomHandler;
+
 
 const checkuserInGameHandle = require('./server/http_handlers/check_user_in_game_handler').handle;
 const createRoomHandle = require('./server/http_handlers/create_room_handler').handle;
@@ -63,6 +69,8 @@ http.listen(3000);
 
 io.on('connection', socket => {
   socket.on(messages.JoinRoom, joinRoomHandler(socket, io));
+  socket.on(messages.DismissRoom, dismissRoomHanler(socket, io));
+  socket.on(messages.LeaveRoom, leaveRoomHandler(socket, io));
   socket.on(messages.SitDown, sitDownHandler(socket, io));
   socket.on(messages.StartGame, startGameHandler(socket, io, handlers));
   socket.on(messages.ResetRoom, resetRoomHandler(socket, io));
@@ -71,5 +79,6 @@ io.on('connection', socket => {
   socket.on(messages.Bet, betHandler(socket, io, handlers));
   socket.on(messages.ShowCard, showcardHandler(socket, io, handlers));
   socket.on(messages.Ready, readyHandler(socket, io, handlers));
+
 });
 

@@ -1,5 +1,3 @@
-import { Promise } from '../../../../Library/Caches/typescript/2.6/node_modules/@types/bluebird';
-
 "use strict";
 
 var path = require('path');
@@ -49,6 +47,9 @@ exports.dismissRoomHanler = (socket, io) => {
             if (!res) {
               logger.error("删除房间" + msg.roomNo + "失败");
               return;
+            } 
+            if (Ack) {
+              Ack({status: 0});
             }
           })
       }
