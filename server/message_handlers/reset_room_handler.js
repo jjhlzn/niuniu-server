@@ -9,6 +9,7 @@ const _ = require('underscore');
 const createFailHandler = require('./share_functions').createFailHandler;
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
+const makeServerUrl = require('../db/game_server').makeServerUrl;
 
 function checkMessage(msg) {
   return null;
@@ -23,8 +24,6 @@ exports.resetRoomHandler = (socket) => {
       return;
     }
 
-    
-
     let getGame = (roomNo) => {
       return redisClient.getAsync(gameUtils.gameKey(msg.roomNo))
         .then( res => {
@@ -38,6 +37,7 @@ exports.resetRoomHandler = (socket) => {
 
     let resetGame = (game) => {
       game.state = gameState.BeforeStart;
+      game.serverUrl = makeServerUrl();
       game.creater = "7654321";
       game.currentRoundNo = 1;
       game.totalRoundCount = 1000;

@@ -41,9 +41,10 @@ handlers['dismissRoomHanler'] = dismissRoomHanler;
 const leaveRoomHandler = require('./server/message_handlers/leave_room_handler').leaveRoomHandler;
 handlers['leaveRoomHandler'] = leaveRoomHandler;
 
-
 const checkuserInGameHandle = require('./server/http_handlers/check_user_in_game_handler').handle;
 const createRoomHandle = require('./server/http_handlers/create_room_handler').handle;
+const getRoomHandle = require('./server/http_handlers/get_room_handler').handle;
+
 
 const messages = require('./server/messages');
 const express = require('express');
@@ -61,6 +62,7 @@ const logger = require('./server/utils/logger').logger(path.basename(__filename)
 
 app.use('/checkuseringame', checkuserInGameHandle);
 app.use('/createroom', createRoomHandle);
+app.use('/getroom', getRoomHandle);
 app.use(express.static('./clients'));
 app.use(express.static('node_modules'));
 

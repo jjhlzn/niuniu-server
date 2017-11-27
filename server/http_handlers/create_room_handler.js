@@ -6,6 +6,7 @@ const gameUtils = require('../db/game_utils');
 const _ = require('underscore');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
+const makeServerUrl = require('../db/game_server').makeServerUrl;
 /*
    reqJson = {
       userId:  ''
@@ -61,7 +62,7 @@ exports.handle = (req, res) => {
   }
 
   let setGameServer = (game) => {
-    game.serverUrl =  "http://192.168.1.114:3000"; // "http://192.168.31.175:3000"; //"http://localhost:3000";
+    game.serverUrl =  makeServerUrl(); // "http://192.168.31.175:3000"; //"http://localhost:3000";
     return game;
   }
 
