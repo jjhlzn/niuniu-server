@@ -119,7 +119,10 @@ module.exports = {
     return 'readyplayers:' + roomNo;
   },
 
-  
+  userKey: userId => {
+    return 'user:' + userId;
+  },
+
   robBankerTimeout: 10000,
   betTimeout: 6000,
   showCardTimeout: 6000,
