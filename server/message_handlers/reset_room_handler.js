@@ -23,6 +23,8 @@ exports.resetRoomHandler = (socket) => {
       return;
     }
 
+    
+
     let getGame = (roomNo) => {
       return redisClient.getAsync(gameUtils.gameKey(msg.roomNo))
         .then( res => {

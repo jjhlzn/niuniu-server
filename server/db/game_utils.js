@@ -120,9 +120,9 @@ module.exports = {
   },
 
   
-  robBankerTimeout: 4000,
-  betTimeout: 4000,
-  showCardTimeout: 4000,
+  robBankerTimeout: 10000,
+  betTimeout: 6000,
+  showCardTimeout: 6000,
   readyTimeout: 6000,
   
   /*

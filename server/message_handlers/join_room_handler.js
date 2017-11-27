@@ -9,6 +9,28 @@ const createFailHandler = require('./share_functions').createFailHandler;
 const redisClient = require('../db/redis_connect').connect();
 const _ = require('underscore');
 
+
+function getImageUrl() {
+  let imageUrls = [
+    'http://p3.wmpic.me/article/2015/03/16/1426483394_eJakzHWr.jpeg',
+    'http://is2.mzstatic.com/image/thumb/Purple122/v4/e5/ab/bc/e5abbc78-16cd-c1fc-8b69-503e70c50e16/source/1200x630bb.jpg',
+    'http://scimg.jb51.net/touxiang/201709/2017091018241774.jpg',
+    'http://www.vstou.com/upload/image/22/201612/1481847190163497.jpg',
+    'http://downza.img.zz314.com/edu/pc/wlgj-1008/2016-03-31/77660051d89fb05f2ba64138ebf965e6.jpg',
+    'http://www.jf258.com/uploads/2015-05-14/191202223.jpg',
+    'http://m.mmwnn.com/dmtp/mimg/toxi/nv/tox566.jpeg',
+    'http://www.85s.com/wp-content/uploads/2016/07/QQ%E6%88%AA%E5%9B%BE20160729180738_%E5%89%AF%E6%9C%AC.jpg',
+    'http://www.85s.com/wp-content/uploads/2016/07/QQ%E6%88%AA%E5%9B%BE20160729180633_%E5%89%AF%E6%9C%AC.jpg',
+    'http://www.85s.com/wp-content/uploads/2016/07/QQ%E6%88%AA%E5%9B%BE20160729180714_%E5%89%AF%E6%9C%AC.jpg'
+  ];
+  let index = Math.round( Math.random() * 1000000 ) % imageUrls.length;
+  return imageUrls[index];
+}
+
+function getUserInfo(userId) {
+  return {headImageUrl: getImageUrl(), nickName: userId, sex: 1, ip: "192.168.0.1"}
+}
+
 //将游戏的状态传给客户端，房间可能不存在，
 exports.joinRoomHandler = (socket, io) => {
   return (msg, Ack) => {
@@ -26,9 +48,11 @@ exports.joinRoomHandler = (socket, io) => {
         if (!playerHash) {
           playerHash = {};
         }
-
-        logger.debug("sitdownPlayes: " +JSON.stringify(playerHash));
-        game.sitdownPlayers = playerHash;
+        let newHash = {};
+        _.keys(playerHash).forEach(item => {newHash[item] = _.extend( {seat: playerHash[item]}, getUserInfo(item))});
+        logger.debug("sitdownPlayes: " +JSON.stringify(newHash));
+        //TODO: 还需要加载用户的信息
+        game.sitdownPlayers = newHash;
         return Promise.resolve(game);
       });
     }
