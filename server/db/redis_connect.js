@@ -4,9 +4,17 @@ var bluebird = require('bluebird');
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
+var path = require('path');
+const logger = require('../utils/logger').logger(path.basename(__filename));
+
 var redisUrl = '';
+let port = 6379;
+
+logger.debug("NODE_ENV: " + (process.env.NODE_ENV ? process.env.NODE_ENV : 'local'));
+
 if (process.env.NODE_ENV == 'production') {
-    redisUrl = '10.45.52.93';
+    redisUrl = 'jf.yhkamani.com';
+    port = 7777;
 } else {
     redisUrl = 'localhost';
 }
@@ -14,7 +22,7 @@ if (process.env.NODE_ENV == 'production') {
 var redisConfig = {
     detect_buffers: true, 
     host: redisUrl, 
-    port: 6379,
+    port: port,
     retry_strategy: function (options) {
         if (options.error != null && options.error.code === 'ECONNREFUSED') {
             // End reconnecting on a specific error and flush all commands with a individual error

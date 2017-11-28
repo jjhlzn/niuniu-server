@@ -123,17 +123,18 @@ module.exports = {
     return 'user:' + userId;
   },
 
+  /*
   robBankerTimeout: 10000,
   betTimeout: 6000,
   showCardTimeout: 6000,
   readyTimeout: 6000,
+  */
   
-  /*
   robBankerTimeout: 1000 * 60 * 60 * 24 * 10, //10天
   betTimeout:   1000 * 60 * 60 * 24 * 10,
   showCardTimeout:   1000 * 60 * 60 * 24 * 10,
   readyTimeout:   1000 * 60 * 60 * 24 * 10,
-  */
+  
 
   currentRoundPlayerIds: currentRoundPlayerIds,
   currentRound: currentRound,

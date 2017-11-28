@@ -67,7 +67,7 @@ app.use('/login', loginHandle);
 app.use(express.static('./clients'));
 app.use(express.static('node_modules'));
 
-http.listen(3000);
+http.listen(3001);
 
 io.on('connection', socket => {
   socket.on(messages.JoinRoom, joinRoomHandler(socket, io));
