@@ -1,6 +1,6 @@
 "use strict";
 
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const gameUtils = require('../db/game_utils');
 const messages = require('../messages');
 const gameState = require('../game_state');
@@ -18,6 +18,8 @@ function checkMessage(msg) {
 exports.resetRoomHandler = (socket) => {
   return (msg, Ack) => {
     logger.debug("Receive ResetRoom: " + JSON.stringify(msg));
+
+    let redisClient = connectRedis();
 
     if (checkMessage() != null) {
       Ack({status: -1, errorMessage: '参数错误'});

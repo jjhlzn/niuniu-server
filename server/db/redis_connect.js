@@ -16,7 +16,7 @@ var redisConfig = {
     host: redisUrl, 
     port: 6379,
     retry_strategy: function (options) {
-        if (options.error.code === 'ECONNREFUSED') {
+        if (options.error != null && options.error.code === 'ECONNREFUSED') {
             // End reconnecting on a specific error and flush all commands with a individual error
             return new Error('The server refused the connection');
         }
@@ -37,8 +37,12 @@ function get_redis_client() {
     return redis.createClient(redisConfig);
 }
 
+let conn = null;
 module.exports = {
   connect: () => {
-      return redis.createClient(redisConfig);
+      if (conn == null || !conn.connected) {
+         conn = redis.createClient(redisConfig);
+      }
+      return conn;
   }
 }

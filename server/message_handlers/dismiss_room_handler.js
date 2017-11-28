@@ -7,7 +7,7 @@ const gameUtils = require('../db/game_utils');
 const getGame = require('./share_functions').getGame;
 const messages = require('../messages');
 const createFailHandler = require('./share_functions').createFailHandler;
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const _ = require('underscore');
 
 //只有房主能够解散房间
@@ -19,6 +19,7 @@ exports.dismissRoomHanler = (socket, io) => {
    return (msg, Ack) => {
     logger.debug("Receive DimissRoom: " + JSON.stringify(msg));
 
+    let redisClient = connectRedis();
     let checkCreater = (game) => {
       if (game.creater != msg.userId) {
         logger.debug("roomNo: " + game.roomNo + ", creater: " + game.creater);

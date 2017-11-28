@@ -1,6 +1,6 @@
 "use strict";
 
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const gameUtils = require('../db/game_utils');
 const getGame = require('./share_functions').getGame;
 const shareFunctions = require('./share_functions');
@@ -25,6 +25,7 @@ exports.startGameHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
     logger.debug("Receive StartGame: " + JSON.stringify(msg));
 
+    let redisClient = connectRedis();
     if (checkMessage() != null) {
       Ack({status: -1, errorMessage: '参数错误'});
       return;

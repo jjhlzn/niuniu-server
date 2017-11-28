@@ -1,7 +1,7 @@
 "use strict";
 
 const gameState = require('../game_state');
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const mongoConnect = require('../db/mongo_connect').mongoConnect;
 const closeMongoConnect = require('../db/mongo_connect').closeMongoConnect;
 const gameUtils = require('../db/game_utils');
@@ -9,6 +9,7 @@ const getGame = require('../message_handlers/share_functions').getGame;
 const _ = require('underscore');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
+const moment = require('moment');
 
 function getRandomUserId() {
   let part2 = Math.round( Math.random() * 10000000  % 100000 );
@@ -35,6 +36,7 @@ exports.handle = (req, res) => {
   var json = req.body;
   logger.debug("reqJson: " + JSON.stringify(json));
   let mongoConnection = mongoConnect();
+  let redisClient = connectRedis();
 
   let checkUserExists = (json) => {
     return mongoConnection.then(db => {
@@ -53,9 +55,9 @@ exports.handle = (req, res) => {
     if (!checkResult.exists) {
       return generateUserId(mongoConnection, 0).then( newUserId => {
         return mongoConnection.then(db =>{
-          return db.collection('users').insertOne(_.extend({userId: newUserId}, json))
+          return db.collection('users').insertOne(_.extend({userId: newUserId, createTime: moment().format('YYYY-MM-DD HH:mm:ss')}, json))
             .then( result => {
-              if (result.ok != 1) {
+              if (result.result.ok != 1) {
                 return Promise.reject("createUserIfNeed：创建用户失败");
               }
               return _.extend({userId: newUserId}, json);

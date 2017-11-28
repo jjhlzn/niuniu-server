@@ -1,6 +1,6 @@
 "use strict";
 
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const gameUtils = require('../db/game_utils');
 const messages = require('../messages');
 const gameState = require('../game_state');
@@ -27,6 +27,7 @@ exports.betHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
     logger.debug("Receive bet: " + JSON.stringify(msg));
 
+    let redisClient = connectRedis();
     if (checkMessage() != null) {
       Ack({status: -1, errorMessage: '参数错误'});
       return;
@@ -141,7 +142,7 @@ exports.createBetTimer = (socket, io, handlers) => {
           .then( game => {
             let playerIds = _.keys(game.rounds[game.rounds.length - 1]['players']);
     
-            redisClient.hgetallAsync(gameUtils.betPlayersKey(game.roomNo))
+            connectRedis().hgetallAsync(gameUtils.betPlayersKey(game.roomNo))
               .then( betPlayerHash => {
                 if (!betPlayerHash) {
                   betPlayerHash = {};

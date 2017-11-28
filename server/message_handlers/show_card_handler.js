@@ -1,6 +1,6 @@
 "use strict";
 
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const gameUtils = require('../db/game_utils');
 const messages = require('../messages');
 const _ = require('underscore');
@@ -60,6 +60,8 @@ exports.showcardHandler = (socket, io, handlers) => {
 
   return (msg, Ack) => {
     logger.debug("Receive ShowCard: " + JSON.stringify(msg));
+
+    let redisClient = connectRedis();
 
     let setShowCard = (game) => {
       return redisClient.hsetAsync(gameUtils.showcardPlayersKey(msg.roomNo), msg.userId, true)
@@ -207,7 +209,7 @@ exports.createShowcardTimer = (socket, io, handlers) => {
         getGame(checkResult.game.roomNo)
           .then(game => {
             logger.debug("showcard timer active!!!");
-            redisClient.hgetallAsync(gameUtils.showcardPlayersKey(game.roomNo))
+            connectRedis().hgetallAsync(gameUtils.showcardPlayersKey(game.roomNo))
               .then( betPlayerHash => {
                 if (!betPlayerHash) {
                   betPlayerHash = {};

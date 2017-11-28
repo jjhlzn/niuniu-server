@@ -1,7 +1,7 @@
 
 "use strict";
 
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const gameUtils = require('../db/game_utils');
 const messages = require('../messages');
 const _ = require('underscore');
@@ -38,6 +38,8 @@ let createNewRound = (game) => {
 exports.readyHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
     logger.debug("Receive Ready: " + JSON.stringify(msg));
+
+    let redisClient = connectRedis();
 
     let setReady = (game) => {
       if (game.state != gameState.WaitForNextRound) {
@@ -228,13 +230,13 @@ exports.createReadyTimer = (socket, io, handlers) => {
         logger.debug("Ready timer active!!!!");
         getGame(checkResult.game.roomNo)
           .then( game => {
-            redisClient.hgetallAsync(gameUtils.readyPlayersKey(game.roomNo))
+            connectRedis().hgetallAsync(gameUtils.readyPlayersKey(game.roomNo))
               .then( readyPlayerHash => {
                   if (!readyPlayerHash) {
                     readyPlayerHash = {};
                   }
     
-                  redisClient.hgetallAsync(gameUtils.sitdownPlayersKey(game.roomNo))
+                  connectRedis().hgetallAsync(gameUtils.sitdownPlayersKey(game.roomNo))
                     .then( sitdownPlayerHash => {
                       let playerIds = _.keys(sitdownPlayerHash);
                       logger.debug("playerIds = " + playerIds);

@@ -1,6 +1,6 @@
 "use strict";
 
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const gameUtils = require('../db/game_utils');
 const messages = require('../messages');
 const gameState = require('../game_state');
@@ -59,6 +59,7 @@ exports.robBankerHandler = (socket, io, handlers) => {
 
   return (msg, Ack) => {
     logger.debug("Receive RobBanker: " + JSON.stringify(msg));
+    let redisClient = connectRedis();
 
     if (checkMessage() != null) {
       Ack({status: -1, errorMessage: '参数错误'});
@@ -188,7 +189,7 @@ exports.createRobBankerTimer = (socket, io, handlers) => {
             }
 
             let round = game.rounds[game.rounds.length - 1];
-            redisClient.hgetallAsync(gameUtils.robBankersKey(game.roomNo))
+            connectRedis().hgetallAsync(gameUtils.robBankersKey(game.roomNo))
               .then( robBankerHash => {
                 if (!robBankerHash) {
                   robBankerHash = {};

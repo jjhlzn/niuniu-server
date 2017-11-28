@@ -2,7 +2,7 @@
 
 "use strict";
 
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const gameUtils = require('../db/game_utils');
 const messages = require('../messages');
 const deck = require('../deck');
@@ -11,6 +11,7 @@ var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 
 let getGame = (roomNo) => {
+  let redisClient = connectRedis();
   return redisClient.getAsync(gameUtils.gameKey(roomNo))
     .then( res => {
       if (!res) {
@@ -22,7 +23,7 @@ let getGame = (roomNo) => {
 };
 
 let createFailHandler = (Ack) => {
-  return (error) => {
+  return (error) => { 
     logger.error("ERROR: " +error);
     
     if (Ack) {

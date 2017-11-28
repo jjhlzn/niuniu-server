@@ -1,6 +1,6 @@
 "use strict";
 
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const gameUtils = require('../db/game_utils');
 const messages = require('../messages');
 const getGame = require('./share_functions').getGame;
@@ -17,6 +17,7 @@ exports.standupHandler = (socket, io) => {
   return (msg, Ack) => {
     logger.debug("Receive StandUp: " + JSON.stringify(msg));
 
+    let redisClient = connectRedis();
     //TODO：验证参数的有效性
     if (checkMessage() != null) {
       Ack({status: -1, errorMessage: '参数错误'});
