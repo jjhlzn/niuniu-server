@@ -230,10 +230,16 @@ exports.createReadyTimer = (socket, io, handlers) => {
         logger.debug("Ready timer active!!!!");
         getGame(checkResult.game.roomNo)
           .then( game => {
-            if (game.roundNo != checkResult.game.roundNo) {
+            if (game.currentRoundNo != checkResult.game.currentRoundNo) {
               logger.debug("this timer is last round, ignored");
               return;
             }
+
+            if (game.state != gameState.WaitForNextRound) {
+              logger.debug("current state is " + game.state + ", ReadyTimer is invalid");
+              return;
+            }
+
             connectRedis().hgetallAsync(gameUtils.readyPlayersKey(game.roomNo))
               .then( readyPlayerHash => {
                   if (!readyPlayerHash) {

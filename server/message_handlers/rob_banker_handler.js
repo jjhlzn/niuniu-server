@@ -183,7 +183,7 @@ exports.createRobBankerTimer = (socket, io, handlers) => {
         logger.debug("RobBanker timer active!!!");
         getGame(checkResult.game.roomNo)
           .then(game => {
-            if (game.roundNo != checkResult.game.roundNo) {
+            if (game.currentRoundNo != checkResult.game.currentRoundNo) {
               logger.debug("this timer is last round, ignored");
               return;
             }

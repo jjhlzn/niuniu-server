@@ -209,10 +209,13 @@ exports.createShowcardTimer = (socket, io, handlers) => {
         getGame(checkResult.game.roomNo)
           .then(game => {
             logger.debug("showcard timer active!!!");
-            logger.debug("game.roundNo = " + game.roundNo);
-            logger.debug("checkResult.game.roundNo = " + checkResult.game.roundNo);
-            if (game.roundNo != checkResult.game.roundNo) {
+            if (game.currentRoundNo != checkResult.game.currentRoundNo) {
               logger.debug("this timer is last round, ignored");
+              return;
+            }
+
+            if (game.state != gameState.CheckCard) {
+              logger.debug("current state is " + game.state + ", ShowCardTimer is invalid");
               return;
             }
       
