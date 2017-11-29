@@ -231,6 +231,7 @@ exports.createReadyTimer = (socket, io, handlers) => {
         getGame(checkResult.game.roomNo)
           .then( game => {
             if (game.roundNo != checkResult.game.roundNo) {
+              logger.debug("this timer is last round, ignored");
               return;
             }
             connectRedis().hgetallAsync(gameUtils.readyPlayersKey(game.roomNo))
