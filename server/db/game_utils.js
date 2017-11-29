@@ -120,7 +120,7 @@ module.exports = {
   },
 
   delegatePlayersKey: roomNo => {
-    return 'delegatplayers:' + roomNo;
+    return 'delegateplayers:' + roomNo;
   },
 
   userKey: userId => {
