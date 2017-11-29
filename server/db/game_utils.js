@@ -119,6 +119,10 @@ module.exports = {
     return 'readyplayers:' + roomNo;
   },
 
+  delegatePlayersKey: roomNo => {
+    return 'delegatplayers:' + roomNo;
+  },
+
   userKey: userId => {
     return 'user:' + userId;
   },

@@ -9,15 +9,15 @@ const createFailHandler = require('./share_functions').createFailHandler;
 const connectRedis = require('../db/redis_connect').connect;
 const userDao = require('../db/user_dao');
 const _ = require('underscore');
-
-function getUserInfo(userId) {
-  return {headImageUrl: getImageUrl(), nickName: userId, sex: 1, ip: "192.168.0.1"}
-}
+const handleUserNotDelegate = require('./not_delegate_handler').handleUserNotDelegate;
 
 //将游戏的状态传给客户端，房间可能不存在，
 exports.joinRoomHandler = (socket, io) => {
   return (msg, Ack) => {
     logger.debug("Receive JoinRoom: " + JSON.stringify(msg));
+    socket.roomNo = msg.roomNo;
+    socket.userId = msg.userId;
+
     let redisClient = connectRedis();
 
     let checkRoomState = (game) => {
@@ -118,6 +118,17 @@ exports.joinRoomHandler = (socket, io) => {
       });
     }
 
+    let getDelegatePlayers = (game) => {
+      return redisClient.hgetallAsync(gameUtils.delegatePlayersKey(game.roomNo))
+        .then( delegatePlayerHash => {
+          if (!delegatePlayerHash) {
+            delegatePlayerHash = {};
+          }
+          game.delegatePlayers = _.keys(delegatePlayerHash);
+          return game;
+        });
+    }
+
     let getReadyPlayers = (game) => {
       return redisClient.hgetallAsync(gameUtils.readyPlayersKey(game.roomNo))
       .then( readyPlayerHash => {
@@ -153,34 +164,41 @@ exports.joinRoomHandler = (socket, io) => {
         game.banker = "";
         //TODO：删除本局的其他用户的关于牌的信息
         if (game.state == gameState.BeforeStart) {
-          return getSitdownPlayers(game).then(game => {
-            return Promise.resolve(game)
-          })
+
+          return Promise.all([getSitdownPlayers(game), getDelegatePlayers(game)])
+          .then( hashs => {
+            return Promise.resolve(game);
+          });
         } else if (game.state == gameState.RobBanker) {
-          return Promise.all([getSitdownPlayers(game), getPlayerCards(game), getPlayerBets(game), getRobBankerPlayers(game)])
+          return Promise.all([getSitdownPlayers(game), getDelegatePlayers(game), getPlayerCards(game), getPlayerBets(game), getRobBankerPlayers(game)])
             .then( hashs => {
               return Promise.resolve(game);
             });
         } else if (game.state == gameState.Bet) {
           game.banker = game.rounds[game.rounds.length - 1].banker;
-          return Promise.all([getSitdownPlayers(game), getPlayerCards(game), getPlayerBets(game),  getBetPlayers(game)])
+          return Promise.all([getSitdownPlayers(game), getDelegatePlayers(game), getPlayerCards(game), getPlayerBets(game),  getBetPlayers(game)])
           .then(hashs => {
             return Promise.resolve(game);
           })
         } else if (game.state == gameState.CheckCard) {
           game.banker = game.rounds[game.rounds.length - 1].banker;
-          return Promise.all([getSitdownPlayers(game), getPlayerCards(game), getPlayerBets(game),  getBetPlayers(game), getShowcardPlayers(game)])
+          return Promise.all([getSitdownPlayers(game), getDelegatePlayers(game), getPlayerCards(game), getPlayerBets(game),  getBetPlayers(game), getShowcardPlayers(game)])
           .then(hashs => {
             return Promise.resolve(game);
           })
         } else if (game.state == gameState.WaitForNextRound) {
-          return Promise.all([getSitdownPlayers(game), getReadyPlayers(game)])
+          return Promise.all([getSitdownPlayers(game), getDelegatePlayers(game), getReadyPlayers(game)])
             .then( hashs => {
               return Promise.resolve(game);
             });
         } else {
           return Promise.reject("join room中无法识别的游戏状态，state = " + game.state);
         }
+    }
+
+    let setUserNotDelegate = (game) => {
+      handleUserNotDelegate(io, msg.roomNo, msg.userId);
+      return game;
     }
 
     let done = (game) => {
@@ -193,6 +211,7 @@ exports.joinRoomHandler = (socket, io) => {
     getGame(msg.roomNo)
       .then(checkRoomState)
       .then(populateGame)
+      .then(setUserNotDelegate)
       .then(done)
       .catch(createFailHandler(Ack));
     

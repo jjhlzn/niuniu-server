@@ -13,11 +13,11 @@ const makeServerUrl = require('../db/game_server').makeServerUrl;
    }
 */
 function getRandomRoomNo() {
-  let part2 = Math.round( Math.random() * 10000000  % 100000 );
-  let part1 = Math.round( Math.random() * 10000000  % 10 ) * 100000;
-  if (part1 == 0) 
-    part1 = 100000;
-  return part1 + part2;
+  let roomNo = Math.round( Math.random() * 10000000  % 1000000 ) + "";
+  if (roomNo.length == 5) {
+    roomNo = "9" + roomNo;
+  }
+  return roomNo;
 }
 
 function generateRoomNo(game) {

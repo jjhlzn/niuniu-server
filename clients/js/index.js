@@ -32,6 +32,23 @@ $('#startGameButton').click( () => {
   });
 });
 
+$('#delegateButton').click( () => {
+  console.log('delegateButton click');
+  socket.emit('Delegate', {
+    roomNo: roomNo,
+    userId: userId
+  });
+});
+
+
+$('#notDelegateButton').click( () => {
+  console.log('notDelegateButton click');
+  socket.emit('NotDelegate', {
+    roomNo: roomNo,
+    userId: userId
+  });
+});
+
 $('#resetRoomButton').click( () => {
   console.log("resetRoomButton click");
   mySeat = -1;

@@ -41,6 +41,14 @@ handlers['dismissRoomHanler'] = dismissRoomHanler;
 const leaveRoomHandler = require('./server/message_handlers/leave_room_handler').leaveRoomHandler;
 handlers['leaveRoomHandler'] = leaveRoomHandler;
 
+const handleUserDelegate = require('./server/message_handlers/delegate_handler').handleUserDelegate;
+const delegateHandler = require('./server/message_handlers/delegate_handler').delegateHandler;
+handlers['delegateHandler'] = delegateHandler;
+
+const handleUserNotDelegate = require('./server/message_handlers/not_delegate_handler').handleUserNotDelegate;
+const notDelegateHandler = require('./server/message_handlers/not_delegate_handler').notDelegateHandler;
+handlers['notDelegateHandler'] = notDelegateHandler;
+
 const checkuserInGameHandle = require('./server/http_handlers/check_user_in_game_handler').handle;
 const createRoomHandle = require('./server/http_handlers/create_room_handler').handle;
 const getRoomHandle = require('./server/http_handlers/get_room_handler').handle;
@@ -70,6 +78,7 @@ app.use(express.static('node_modules'));
 http.listen(3001);
 
 io.on('connection', socket => {
+  
   socket.on(messages.JoinRoom, joinRoomHandler(socket, io));
   socket.on(messages.DismissRoom, dismissRoomHanler(socket, io));
   socket.on(messages.LeaveRoom, leaveRoomHandler(socket, io));
@@ -81,6 +90,13 @@ io.on('connection', socket => {
   socket.on(messages.Bet, betHandler(socket, io, handlers));
   socket.on(messages.ShowCard, showcardHandler(socket, io, handlers));
   socket.on(messages.Ready, readyHandler(socket, io, handlers));
+  socket.on(messages.Delegate, delegateHandler(socket, io));
+  socket.on(messages.NotDelegate, notDelegateHandler(socket, io));
 
+  //连接中断，如果需要处理委托
+  socket.on('disconnect', () => {
+    if (socket.roomNo && socket.userId)
+      handleUserDelegate(io, socket.roomNo, socket.userId)
+  });
 });
 
