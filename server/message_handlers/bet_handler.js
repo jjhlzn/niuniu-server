@@ -140,8 +140,11 @@ exports.createBetTimer = (socket, io, handlers) => {
         logger.debug("bet timer active!!!");
         getGame(checkResult.game.roomNo)
           .then( game => {
+            if (game.roundNo != checkResult.game.roundNo) {
+              return;
+            }
+
             let playerIds = _.keys(game.rounds[game.rounds.length - 1]['players']);
-    
             connectRedis().hgetallAsync(gameUtils.betPlayersKey(game.roomNo))
               .then( betPlayerHash => {
                 if (!betPlayerHash) {

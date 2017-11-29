@@ -209,6 +209,10 @@ exports.createShowcardTimer = (socket, io, handlers) => {
         getGame(checkResult.game.roomNo)
           .then(game => {
             logger.debug("showcard timer active!!!");
+            if (game.roundNo != checkResult.game.roundNo) {
+              return;
+            }
+      
             connectRedis().hgetallAsync(gameUtils.showcardPlayersKey(game.roomNo))
               .then( betPlayerHash => {
                 if (!betPlayerHash) {

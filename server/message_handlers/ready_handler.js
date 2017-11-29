@@ -230,6 +230,9 @@ exports.createReadyTimer = (socket, io, handlers) => {
         logger.debug("Ready timer active!!!!");
         getGame(checkResult.game.roomNo)
           .then( game => {
+            if (game.roundNo != checkResult.game.roundNo) {
+              return;
+            }
             connectRedis().hgetallAsync(gameUtils.readyPlayersKey(game.roomNo))
               .then( readyPlayerHash => {
                   if (!readyPlayerHash) {
