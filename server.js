@@ -53,6 +53,7 @@ const checkuserInGameHandle = require('./server/http_handlers/check_user_in_game
 const createRoomHandle = require('./server/http_handlers/create_room_handler').handle;
 const getRoomHandle = require('./server/http_handlers/get_room_handler').handle;
 const loginHandle = require('./server/http_handlers/login_handler').handle;
+const shareHandle = require('./server/http_handlers/share_handler').handle;
 
 const messages = require('./server/messages');
 const express = require('express');
@@ -68,6 +69,7 @@ const logger = require('./server/utils/logger').logger(path.basename(__filename)
 
 //logger.debug("readyHandler = " + readyHandler)
 
+app.use('/share', shareHandle);
 app.use('/checkuseringame', checkuserInGameHandle);
 app.use('/createroom', createRoomHandle);
 app.use('/getroom', getRoomHandle);
