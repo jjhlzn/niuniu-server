@@ -12,7 +12,8 @@
 	<meta name="description" content="" />
 
 	<title>快乐棋牌</title>
-	<script src="jquery/dist/jquery.min.js"></script>
+  <script src="jquery/dist/jquery.min.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
 	<script>
 		// 是否是安卓
 		function isAndroid() {
@@ -60,7 +61,10 @@
 			if (isrefresh == 1) {
 				return
       }
-      window.location.href = 'jjhniuniu://niuniu.com/jinjunhang/room='+key;
+      //alert("key = " + key);
+      //window.open('wx73653b5260b24787://?room=' + key)
+      
+      window.location.href = 'wx73653b5260b24787://?room=' + key;
     }
     
     function openApp_ios(key, refresh) {
@@ -68,9 +72,9 @@
 			if (isrefresh == 1) {
 				return
       }
-      
 			window.location.href = 'wx73653b5260b24787://?room='+key;
-		}
+    }
+    
 
 		function enterRoom() {
 			var browser = {
@@ -120,15 +124,8 @@
 
 
 		$(document).ready(function () {
-      $('#test').click( () => {
-        alert(JSON.stringify(event));
-        //window.location.href= "http://www.baidu.com";
-        window.location.href = 'jjhniuniu://niuniu.com/jinjunhang/room=123456';
-        //window.location.href = 'intent://enterroom?#Intent;scheme=jinjunhangniuniu;package=com.jinjunhang.onlineclass;end;';
-       //window.location.href = 'wx73653b5260b24787://?room='+key;
-       setTimeout( () => { 
-        //window.open('intent://enterroom?#Intent;scheme=wx73653b5260b24787;package=com.jinjunhang.onlineclass;end;');
-       }, 2000);
+      $('#openroom').click( () => {
+        enterRoom();
       })
 			enterRoom();
 
@@ -274,6 +271,7 @@
 </head>
 
 <body>
+
 	<!-- 微信分享缩图图 -->
 	<img src="./image/icon_300x300.jpg" width="0" height="0" />
   
@@ -306,20 +304,18 @@
 		<a class="common-ios hp-download-download common-hide" href="">
 			<img id="download-ios" class="common-center hp-download-btn" src="http://ox.kawa88.com/image/ios_btn_download.png">
     </a>
-  
-    <a id="openandroidbtn" style="display: none;" class="common-ios hp-download-download common-hide" href="intent://enterroom#Intent;scheme=wx73653b5260b24787;package=com.jinjunhang.onlineclass;end;">
-        <img id="download-ios" class="common-center hp-download-btn" src="http://ox.kawa88.com/image/ios_btn_download.png">
-    </a>
-    
-    <button id="test" href="" > test </button>
-     
-	</section>
+  </section>
 
-
-
+  <section class="hp-download">
+      <!-- ios下载链接 -->
+      <a id='openroom' class="common-ios hp-download-download common-hide" href="">
+        <img id="download-ios" class="common-center hp-download-btn" src="./js/btn_openroom.png">
+      </a>
+    </section>
 
 
 	<section id="mask" class="common-hide hp-mask">
+
 		<div class="hp-mask-background"></div>
 		<img class="hp-mask-instruction" src="./image/instruction.png">
 	</section>
