@@ -18,6 +18,7 @@ function getBiggerWinnersAndLosers(scores) {
   let keys = _.keys(scores);
   let values = _.values(scores);
   if (keys.length <= 1) {
+    logger.error("ERROR: keys.length = " + keys.length);
     return {biggestWinners: [], biggestLosers: []};
   }
 
@@ -25,16 +26,17 @@ function getBiggerWinnersAndLosers(scores) {
   let biggest = sortedScores[sortedScores.length - 1];
   let smallest = sortedScores[0];
 
+
   let biggestWinners = [];
   if (biggest > 0) {
      biggestWinners = _.zip(keys, values).filter(a => a[1] === biggest).map(a => a[0]);
-  }
-
+    }
+  logger.debug("biggestWinners = " + biggestWinners + ", biggest = " + biggest);
   let biggestLosers = [];
   if (smallest < 0) {
     biggestLosers =  _.zip(keys, values).filter(a => a[1] === smallest).map(a => a[0]);
   }
-
+  logger.debug("biggestLosers = " + biggestLosers + ", smallest = " + smallest);
   return {biggestWinners: biggestWinners, biggestLosers: biggestLosers};
 }
 
@@ -47,7 +49,7 @@ function makeGameOverResponse(game) {
   response.bigLosers = result.biggestLosers;
   response.isPlayed = game.isPlayed ? true : false;
   response.gameOverTime = game.gameOverTime;
-  return game;
+  return response;
 }
 
 let locked = {};
@@ -64,6 +66,9 @@ exports.showcardHandler = (socket, io, handlers) => {
     let redisClient = connectRedis();
 
     let setShowCard = (game) => {
+      if (game.state != gameState.CheckCard) {
+        return Promise.reject("当前状态为" + game.state + ", 不能showcard");
+      }
       return redisClient.hsetAsync(gameUtils.showcardPlayersKey(msg.roomNo), msg.userId, true)
               .then(res => {
                 if (!res) {

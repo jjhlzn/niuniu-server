@@ -161,8 +161,6 @@ exports.robBankerHandler = (socket, io, handlers) => {
       )
     }
 
-    
-
     getGame(msg.roomNo)
       .then(checkGameState)
       .then(setRobBankerOrNot)

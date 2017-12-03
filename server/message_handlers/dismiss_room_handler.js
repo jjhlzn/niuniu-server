@@ -39,11 +39,11 @@ exports.dismissRoomHanler = (socket, io) => {
     }
 
     let dismissRoom = (game) => {
+      io.to(game.roomNo).emit(messages.RoomHasDismissed, {roomNo: game.roomNo})
       if (game.roomNo == "123456") {
         Ack({status: 0});
-        io.to(msg.roomNo).emit(messages.DismissRoom, {roomNo: msg.roomNo})
       } else {
-        return redisClient.delAsync(gameUtils.gameKey(msg.roomNo))
+        return redisClient.delAsync(gameUtils.gameKey(game.roomNo))
           .then(res => {
             if (!res) {
               logger.error("删除房间" + msg.roomNo + "失败");

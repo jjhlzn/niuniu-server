@@ -39,6 +39,8 @@ exports.betHandler = (socket, io, handlers) => {
     }
 
     let setPlayerBet = (game) => {
+      
+
       return redisClient.hsetAsync(gameUtils.betPlayersKey(msg.roomNo), msg.userId, msg.bet)
         .then( res => {
           if (!res) {

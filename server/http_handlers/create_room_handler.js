@@ -1,7 +1,7 @@
 "use strict";
 
 const gameState = require('../game_state');
-const redisClient = require('../db/redis_connect').connect();
+const connectRedis = require('../db/redis_connect').connect;
 const gameUtils = require('../db/game_utils');
 const _ = require('underscore');
 var path = require('path');
@@ -22,7 +22,7 @@ function getRandomRoomNo() {
 
 function generateRoomNo(game) {
   game.roomNo = getRandomRoomNo();
-  return redisClient.existsAsync(gameUtils.gameKey(game.roomNo))
+  return connectRedis().existsAsync(gameUtils.gameKey(game.roomNo))
     .then( exists => {
       if (exists) {
         return generateRoomNo(game);
@@ -32,7 +32,7 @@ function generateRoomNo(game) {
 }
 
 function saveGame(game) {
-  return redisClient.setAsync(gameUtils.gameKey(game.roomNo), JSON.stringify(game))
+  return connectRedis().setAsync(gameUtils.gameKey(game.roomNo), JSON.stringify(game))
     .then( res => {
       if (!res) {
         return Promise.reject("保存game失败")

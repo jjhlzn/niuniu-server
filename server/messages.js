@@ -31,5 +31,6 @@ module.exports = {
   Delegate: "Delegate",   //委托给服务器
 	SomePlayerDelegate: "SomePlayerDelegate",  //手机切入后台 & 断线 
 	NotDelegate: "NotDelegate",   //委托给服务器
-	SomePlayerNotDelegate: "SomePlayerNotDelegate",  //手机切入后台 & 断线 
+  SomePlayerNotDelegate: "SomePlayerNotDelegate",  //手机切入后台 & 断线 
+  RoomHasDismissed: 'RoomHasDismissed',
 }
