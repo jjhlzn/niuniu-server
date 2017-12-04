@@ -47,10 +47,14 @@ exports.handle = (req, res) => {
 
   let game = {};
   game.creater = json.userId;
+  game.totalRoundCount = parseInt(json.jushu);
+  game.robBankerType = json.qz;
+  game.fengshu = json.fengshu;
+  game.wanfa = json.wanfa;
+  game.fangfei = json.fangfei;
   game.createTime = Date.now;
   game.state = gameState.BeforeStart;
   game.currentRoundNo = 1;
-  game.totalRoundCount = 10;
   game.players = [];
   game.sitdownPlayers = {};
   game.rounds = [];

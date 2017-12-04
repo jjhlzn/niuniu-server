@@ -75,6 +75,7 @@ app.use('/createroom', createRoomHandle);
 app.use('/getroom', getRoomHandle);
 app.use('/login', loginHandle);
 app.use(express.static('./clients'));
+app.use(express.static('./clients/images'));
 app.use(express.static('node_modules'));
 
 http.listen(3001);
