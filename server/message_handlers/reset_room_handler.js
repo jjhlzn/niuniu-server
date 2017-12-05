@@ -10,32 +10,23 @@ const createFailHandler = require('./share_functions').createFailHandler;
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 const makeServerUrl = require('../db/game_server').makeServerUrl;
+const gameDao = require('../db/game_dao');
 
-function checkMessage(msg) {
-  return null;
-}
-
-exports.resetRoomHandler = (socket) => {
+let resetRoomHandler = (socket) => {
   return (msg, Ack) => {
     logger.debug("Receive ResetRoom: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();
 
-    if (checkMessage() != null) {
-      Ack({status: -1, errorMessage: '参数错误'});
-      return;
+    let setUserLeaveGame = (game) => {
+      return gameDao.getSitPlayerIds(game.roomNo)
+              .then( userIds => {
+                let allPromises = playerIds.map(playerId => userDao.setUserLeaveGame(playerId, game));
+                return Promise.all(allPromises).then( hashs => {
+                  return game;
+                });
+              });
     }
-
-    let getGame = (roomNo) => {
-      return redisClient.getAsync(gameUtils.gameKey(msg.roomNo))
-        .then( res => {
-          if (!res) {
-            return Promise.reject("服务器出错");
-          }
-    
-          return Promise.resolve(JSON.parse(res));
-        });
-    };
 
     let resetGame = (game) => {
       game.state = gameState.BeforeStart;
@@ -50,9 +41,6 @@ exports.resetRoomHandler = (socket) => {
 
       return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game))
         .then(res => {
-          if (!res) {
-            //return Promise.reject("保存到redis失败");
-          }
           return Promise.resolve(game);
         });
     }
@@ -60,9 +48,6 @@ exports.resetRoomHandler = (socket) => {
     let resetSitdownPlayers = (game) => {
       return redisClient.delAsync(gameUtils.sitdownPlayersKey(msg.roomNo)).then(
         res => {
-          if (!res) {
-            //return Promise.reject("reset sitdown players失败");
-          }
           return Promise.resolve(game);
         }
       )
@@ -71,9 +56,6 @@ exports.resetRoomHandler = (socket) => {
     let resetRobBankers = (game) => {
       return redisClient.delAsync(gameUtils.robBankersKey(msg.roomNo)).then(
         res => {
-          if (!res) {
-            //return Promise.reject("reset robBankers fail");
-          }
           return Promise.resolve(game);
         }
       )
@@ -82,9 +64,6 @@ exports.resetRoomHandler = (socket) => {
     let resetBetPlayers = (game) => {
       return redisClient.delAsync(gameUtils.betPlayersKey(msg.roomNo)).then(
         res => {
-          if (!res) {
-            return Promise.reject("reset batPlayers fail");
-          }
           return Promise.resolve(game);
         }
       )
@@ -93,9 +72,6 @@ exports.resetRoomHandler = (socket) => {
     let resetShowCardPlayers = (game) => {
       return redisClient.delAsync(gameUtils.showcardPlayersKey(msg.roomNo)).then(
         res => {
-          if (!res) {
-            //return Promise.reject("reset showcardPlayers fail");
-          }
           return Promise.resolve(game);
         }
       )
@@ -104,13 +80,12 @@ exports.resetRoomHandler = (socket) => {
     let resetReadyPlayers = (game) => {
       return redisClient.delAsync(gameUtils.readyPlayersKey(msg.roomNo)).then(
         res => {
-          if (!res) {
-            //return Promise.reject("reset readyPlayers fail");
-          }
           return Promise.resolve(game);
         }
       )
     }
+
+    
 
     let done = () => {
       logger.debug("reset success");
@@ -124,7 +99,8 @@ exports.resetRoomHandler = (socket) => {
       Ack({status: -1, errorMessage: error});
     }
 
-    getGame(msg.roomNo)
+    gameDao.getGame(msg.roomNo)
+      .then(setUserLeaveGame)
       .then(resetGame)
       .then(resetSitdownPlayers)
       .then(resetRobBankers)
@@ -136,3 +112,7 @@ exports.resetRoomHandler = (socket) => {
 
   };
 };
+
+module.exports = {
+  resetRoomHandler: resetRoomHandler
+}

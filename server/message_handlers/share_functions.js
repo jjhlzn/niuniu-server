@@ -24,7 +24,8 @@ let getGame = (roomNo) => {
 
 let createFailHandler = (Ack) => {
   return (error) => { 
-    logger.error("ERROR: " +error);
+    logger.error("ERROR: " + error);
+    logger.error("ERROR: " + _.allKeys(error));
     
     if (Ack) {
       logger.debug("Sent Error Ack message");

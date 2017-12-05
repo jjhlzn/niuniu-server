@@ -8,38 +8,31 @@ const createFailHandler = require('./share_functions').createFailHandler;
 const gameState = require('../game_state');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
+const userDao = require('../db/user_dao');
 
-function checkMessage(msg) {
-  return null;
-}
 
 exports.standupHandler = (socket, io) => {
   return (msg, Ack) => {
     logger.debug("Receive StandUp: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();
-    //TODO：验证参数的有效性
-    if (checkMessage() != null) {
-      Ack({status: -1, errorMessage: '参数错误'});
-      return;
-    }
 
     let checkGameState = (game) => {
       if (game.state != gameState.BeforeStart) {
         return Promise.reject("游戏开始之后不允许站起");
       }
-      return Promise.resolve(game);
+      return game;
     }
 
     let standup = (game) => {
       return redisClient.hdelAsync(gameUtils.sitdownPlayersKey(game.roomNo), msg.userId)
-        .then( delNumber => {
-          if (delNumber != 1) {
-            return Promise.reject(error);
-          }
-
-          return Promise.resolve(true);
+        .then( res => {
+          return game;
         });
+    }
+
+    let setUserLeaveGame = (game) => {
+      return userDao.setUserLeaveGame(msg.userId, game);
     }
 
     let sendSomePlayerStandupNotify = () => {
@@ -50,6 +43,7 @@ exports.standupHandler = (socket, io) => {
     getGame(msg.roomNo)
       .then(checkGameState)
       .then(standup)
+      .then(setUserLeaveGame)
       .then(sendSomePlayerStandupNotify)
       .catch(createFailHandler(Ack));
   }

@@ -39,6 +39,7 @@ exports.handle = (req, res) => {
   let redisClient = connectRedis();
 
   let checkUserExists = (json) => {
+
     return mongoConnection.then(db => {
       return db.collection('users').findOne({unionid: json.unionid}).then( user => {
           if (!user) {
@@ -75,7 +76,12 @@ exports.handle = (req, res) => {
   }
 
   let setRedis = (user) => {
-    redisClient.setAsync(gameUtils.userKey(user.userId), JSON.stringify(user));
+    redisClient.existsAsync( gameUtils.userKey(user.userId) )
+      .then( res => {
+        if (!res) {
+          redisClient.setAsync(gameUtils.userKey(user.userId), JSON.stringify(user));
+        }
+      })
   }
 
   let done = () => {

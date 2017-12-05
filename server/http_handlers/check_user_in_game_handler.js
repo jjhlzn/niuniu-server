@@ -4,6 +4,9 @@ var url = require('url');
 var querystring = require('querystring');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
+const userDao = require('../db/user_dao');
+const connectRedis = require('../db/redis_connect').connectRedis;
+const getGame = require('../message_handlers/share_functions').getGame;
 /*
    reqJson = {
       userId:  ''
@@ -11,7 +14,6 @@ const logger = require('../utils/logger').logger(path.basename(__filename));
 */
 
 exports.handle = (req, res) => {
-  //res.send('Hello World');
   logger.debug("req.query: ", JSON.stringify(req.url.query));
   res.setHeader('Content-Type', 'application/json');
 
@@ -22,11 +24,31 @@ exports.handle = (req, res) => {
   logger.debug("userId: " + json.userId);
 
   let resp = {
+    status: 0,
     userId: json.userId,
-    isInGame: false,
-    roomNo: "123456",
-    serverUrl: "http://localhost:3000"
+    isInGame: false
   };
 
-  res.end(JSON.stringify(resp));
+  let failHandler = () => {
+    resp.status = -1;
+    resp.end(JSON.stringify(resp));
+  }
+  
+  userDao.getUser(json.userId)
+    .then( user => {
+      if (user.currentRoomNo) {
+        resp.isInGame = true;
+        resp.roomNo = user.currentRoomNo;
+
+        getGame(resp.roomNo).then(game => {
+          resp.serverUrl = game.serverUrl;
+          res.end(JSON.stringify(resp));
+        }).catch(failHandler);
+
+      } else {
+        resp.isInGame = false;
+        resp.roomNo = "";
+        res.end(JSON.stringify(resp));
+      }
+    }).catch(failHandler);
 }

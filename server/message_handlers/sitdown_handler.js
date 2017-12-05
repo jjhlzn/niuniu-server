@@ -10,32 +10,32 @@ var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 const userDao = require('../db/user_dao');
 
+//那么用户一旦坐下，则用户的状态设置为在那个房间
 exports.sitdownHandler = (socket) => {
   return (msg, Ack) => {
     logger.debug("Receive SitDown: " + JSON.stringify(msg));
     let redisClient = connectRedis();
 
+    let thisGame = {};
+    let thisUser = {};
+
     let checkSeat = (game) => {
+      thisGame = game;
+
       return redisClient.existsAsync(gameUtils.sitdownPlayersKey(msg.roomNo))
         .then( exists => {
           if (!exists) {
             return true;
           } else {
             return redisClient.hgetallAsync(gameUtils.sitdownPlayersKey(msg.roomNo)).then(playerHash => {
-              if (!playerHash) {
-                return Promise.reject("获取sitdownPlayers失败");
-              }
-
               logger.debug("sitdownPlayes: " +JSON.stringify(playerHash));
               if (playerHash[msg.userId]) {
                 return Promise.reject('Player ' + msg.userId + ' has sit down');
               }
-      
               let seatNos = _.values(playerHash);
               if (seatNos.filter( seat => {return seat == msg.seat}).length > 0) {
                 return Promise.reject('Seat ' + msg.seat + ' has player');
               }
-
               return true;
             });
           }
@@ -47,6 +47,7 @@ exports.sitdownHandler = (socket) => {
     }
 
     let sit = (user) => {
+      this.user = user;
       return redisClient.hsetAsync(gameUtils.sitdownPlayersKey(msg.roomNo), msg.userId, msg.seat).then(res => {
         if (!res) {
           return Promise.reject(res);
@@ -55,10 +56,13 @@ exports.sitdownHandler = (socket) => {
       });
     }
 
-    //TODO：检查自己是否已经在该座位上，并且把该用户的信息发送给其他用户：头像链接，nickname, sex。
-    let checkSit = (user) => {
+    let setUserInGame = () => {
+      return userDao.setUserInGame(msg.userId, thisGame);
+    }
+
+    let sendResponse = () => {
       Ack({status: 0});
-      socket.to(msg.roomNo).emit(messages.SomePlayerSitDown, _.extend(msg, user));
+      socket.to(msg.roomNo).emit(messages.SomePlayerSitDown, _.extend(msg, thisUser));
     }
 
  
@@ -66,7 +70,8 @@ exports.sitdownHandler = (socket) => {
       .then(checkSeat)
       .then(checkUserId)
       .then(sit)
-      .then(checkSit)
+      .then(setUserInGame)
+      .then(sendResponse)
       .catch(createFailHandler(Ack));
   }
 

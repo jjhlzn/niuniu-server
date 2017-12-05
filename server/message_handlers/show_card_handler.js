@@ -9,6 +9,8 @@ const getGame = require('./share_functions').getGame;
 const gameState = require('../game_state');
 const currentRoundPalyerIds = require('../db/game_utils').currentRoundPlayerIds;
 const currentRoundPlayerInfos = require('../db/game_utils').currentRoundPlayerInfos;
+const gameDao = require('../db/game_dao');
+const userDao = require('../db/user_dao');
 const hasNextRound = require('../db/game_utils').hasNextRound;
 const moment = require('moment');
 var path = require('path');
@@ -173,6 +175,18 @@ exports.showcardHandler = (socket, io, handlers) => {
                   }
                   
                   if (isGameOver) {
+                    gameDao.getSitPlayerIds(game.roomNo)
+                            .then( userIds => {
+                              let allPromises = userIds.map(userId => userDao.setUserLeaveGame(userId, game));
+                              return Promise.all(allPromises).then( hashs => {
+                                logger.debug("所有的人的currentRoomNo都设置为空了")
+                                return game;
+                              });
+                            })
+                            .catch( (error) => {
+                              logger.error("游戏结束时，设置currentRoomNo的时候出错, error = " + error);
+                            });;
+
                     let resp = makeGameOverResponse(game);
                     io.to(msg.roomNo).emit(messages.GoToGameOver, _.extend(resp, {resultDict: resultDict, gameOverAfterRound: true}));
                     logger.debug("Sent GameOver Notify");
@@ -194,8 +208,6 @@ exports.showcardHandler = (socket, io, handlers) => {
       }
     };
 
-
-
     getGame(msg.roomNo)
       .then(setShowCard)
       .then(sendSomePlayerShowCardNotify)
@@ -203,7 +215,6 @@ exports.showcardHandler = (socket, io, handlers) => {
       .then(sendGoToCompareCardNotify)
       .then(handlers.createReadyTimer(socket, io, handlers))
       .catch(createFailHandler(Ack));
-
   }
 }
 

@@ -8,6 +8,8 @@ const getGame = require('./share_functions').getGame;
 const messages = require('../messages');
 const createFailHandler = require('./share_functions').createFailHandler;
 const connectRedis = require('../db/redis_connect').connect;
+const userDao = require('../db/user_dao');
+const gameDao = require('../db/game_dao');
 const _ = require('underscore');
 
 //只有房主能够解散房间
@@ -38,6 +40,17 @@ exports.dismissRoomHanler = (socket, io) => {
       return game;
     }
 
+    let setAllUsersLeaveGame = (game) => {
+      
+      return gameDao.getSitPlayerIds(game.roomNo)
+        .then( userIds => {
+          let allPromises = userIds.map(userId => userDao.setUserLeaveGame(userId, game));
+          return Promise.all(allPromises).then( hashs => {
+            return game;
+          });
+        });
+    }
+
     let dismissRoom = (game) => {
       io.to(game.roomNo).emit(messages.RoomHasDismissed, {roomNo: game.roomNo})
       if (game.roomNo == "123456") {
@@ -45,10 +58,6 @@ exports.dismissRoomHanler = (socket, io) => {
       } else {
         return redisClient.delAsync(gameUtils.gameKey(game.roomNo))
           .then(res => {
-            if (!res) {
-              logger.error("删除房间" + msg.roomNo + "失败");
-              return;
-            } 
             if (Ack) {
               Ack({status: 0});
             }
@@ -60,6 +69,7 @@ exports.dismissRoomHanler = (socket, io) => {
     getGame(msg.roomNo)
       .then(checkCreater)
       .then(checkState)
+      .then(setAllUsersLeaveGame)
       .then(dismissRoom)
       .catch(createFailHandler(Ack));
    }

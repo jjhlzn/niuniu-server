@@ -11,7 +11,7 @@ const deck = require('../deck');
 const _ = require('underscore');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
-
+const userDao = require('../db/user_dao');
 
 function checkMessage(msg) {
   return null;
@@ -58,7 +58,6 @@ exports.startGameHandler = (socket, io, handlers) => {
         return Promise.resolve(game);
       });
     }
-
     
     let sendStartGameNotify = (game) => {
       Ack({status: 0});
@@ -78,7 +77,6 @@ exports.startGameHandler = (socket, io, handlers) => {
       return Promise.resolve({isNeedSet: true, game: game});
     }; 
 
-    
 
     getGame(msg.roomNo)
       .then(setSitDownPlayers)
