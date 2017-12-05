@@ -11,6 +11,7 @@ var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 const makeServerUrl = require('../db/game_server').makeServerUrl;
 const gameDao = require('../db/game_dao');
+const userDao = require('../db/user_dao');
 
 let resetRoomHandler = (socket) => {
   return (msg, Ack) => {
@@ -21,7 +22,7 @@ let resetRoomHandler = (socket) => {
     let setUserLeaveGame = (game) => {
       return gameDao.getSitPlayerIds(game.roomNo)
               .then( userIds => {
-                let allPromises = playerIds.map(playerId => userDao.setUserLeaveGame(playerId, game));
+                let allPromises = userIds.map(playerId => userDao.setUserLeaveGame(playerId, game));
                 return Promise.all(allPromises).then( hashs => {
                   return game;
                 });
@@ -33,7 +34,7 @@ let resetRoomHandler = (socket) => {
       game.serverUrl = makeServerUrl();
       game.creater = "7654321";
       game.currentRoundNo = 1;
-      game.totalRoundCount = 100;
+      game.totalRoundCount = 1;
       game.players = [];
       game.sitdownPlayers = {};
       game.rounds = [];
@@ -84,8 +85,6 @@ let resetRoomHandler = (socket) => {
         }
       )
     }
-
-    
 
     let done = () => {
       logger.debug("reset success");

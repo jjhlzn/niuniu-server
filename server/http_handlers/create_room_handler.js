@@ -86,11 +86,11 @@ exports.handle = (req, res) => {
 }
 
 function getRandomRoomNo() {
-  let roomNo = Math.round( Math.random() * 10000000  % 1000000 ) + "";
-  if (roomNo.length == 5) {
-    roomNo = "9" + roomNo;
+  let str = "";
+  for(var i = 0; i < 6; i++) {
+    str += Math.round( Math.random() * 10000000  % 10 );
   }
-  return roomNo;
+  return str;
 }
 
 function generateRoomNo(game) {

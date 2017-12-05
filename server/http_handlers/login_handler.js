@@ -12,9 +12,11 @@ const logger = require('../utils/logger').logger(path.basename(__filename));
 const moment = require('moment');
 
 function getRandomUserId() {
-  let part2 = Math.round( Math.random() * 10000000  % 100000 );
-  let part1 = 200000;
-  return part1 + part2;
+  let str = "";
+  for(var i = 0; i < 6; i++) {
+    str += Math.round( Math.random() * 10000000  % 10 );
+  }
+  return str;
 }
 
 function generateUserId(mongoConnection, count) {

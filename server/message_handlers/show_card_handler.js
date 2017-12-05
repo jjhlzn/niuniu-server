@@ -1,6 +1,7 @@
 "use strict";
 
 const connectRedis = require('../db/redis_connect').connect;
+
 const gameUtils = require('../db/game_utils');
 const messages = require('../messages');
 const _ = require('underscore');
@@ -15,44 +16,6 @@ const hasNextRound = require('../db/game_utils').hasNextRound;
 const moment = require('moment');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
-
-function getBiggerWinnersAndLosers(scores) {
-  let keys = _.keys(scores);
-  let values = _.values(scores);
-  if (keys.length <= 1) {
-    logger.error("ERROR: keys.length = " + keys.length);
-    return {biggestWinners: [], biggestLosers: []};
-  }
-
-  let sortedScores = _.values(scores);
-  let biggest = sortedScores[sortedScores.length - 1];
-  let smallest = sortedScores[0];
-
-
-  let biggestWinners = [];
-  if (biggest > 0) {
-     biggestWinners = _.zip(keys, values).filter(a => a[1] === biggest).map(a => a[0]);
-    }
-  logger.debug("biggestWinners = " + biggestWinners + ", biggest = " + biggest);
-  let biggestLosers = [];
-  if (smallest < 0) {
-    biggestLosers =  _.zip(keys, values).filter(a => a[1] === smallest).map(a => a[0]);
-  }
-  logger.debug("biggestLosers = " + biggestLosers + ", smallest = " + smallest);
-  return {biggestWinners: biggestWinners, biggestLosers: biggestLosers};
-}
-
-function makeGameOverResponse(game) {
-  //scores
-  let response = {};
-  response.scores = game.scores;
-  let result = getBiggerWinnersAndLosers(response.scores);
-  response.bigWinners = result.biggestWinners;
-  response.bigLosers = result.biggestLosers;
-  response.isPlayed = game.isPlayed ? true : false;
-  response.gameOverTime = game.gameOverTime;
-  return response;
-}
 
 let locked = {};
 
@@ -77,7 +40,7 @@ exports.showcardHandler = (socket, io, handlers) => {
                   return Promise.reject("setShowCard失败: userid = " + msg.userId);
                 }
 
-                return Promise.resolve(game);
+                return game;
               })
     };
 
@@ -186,10 +149,14 @@ exports.showcardHandler = (socket, io, handlers) => {
                             .catch( (error) => {
                               logger.error("游戏结束时，设置currentRoomNo的时候出错, error = " + error);
                             });;
-
-                    let resp = makeGameOverResponse(game);
-                    io.to(msg.roomNo).emit(messages.GoToGameOver, _.extend(resp, {resultDict: resultDict, gameOverAfterRound: true}));
-                    logger.debug("Sent GameOver Notify");
+                    
+                    //将游戏保存到MongoDB, 并且从Redis中删除
+                    return gameDao.saveGameRecord(game).then( () => {
+                      let resp = makeGameOverResponse(game);
+                      io.to(msg.roomNo).emit(messages.GoToGameOver, _.extend(resp, {resultDict: resultDict, gameOverAfterRound: true}));
+                      logger.debug("Sent GameOver Notify");
+                      return {isNeedSet:isNeedSetTimer, game: game};
+                    })
                   } else {
                     io.to(msg.roomNo).emit(messages.GoToCompareCard, {
                       resultDict: resultDict,
@@ -197,14 +164,14 @@ exports.showcardHandler = (socket, io, handlers) => {
                     });
                     logger.debug("Sent GoToCompareCard");
                   }
-                  return Promise.resolve({isNeedSet:isNeedSetTimer, game: game});
+                  return {isNeedSet:isNeedSetTimer, game: game};
             })
           } else {
-            return Promise.resolve({isNeedSet: false, game: game});
+            return {isNeedSet: false, game: game};
           }
         });
       } else {
-        return Promise.resolve({isNeedSet: false, game: checkResult.game});
+        return {isNeedSet: false, game: checkResult.game};
       }
     };
 
@@ -256,4 +223,43 @@ exports.createShowcardTimer = (socket, io, handlers) => {
       }, gameUtils.showCardTimeout);
     }
   }
+}
+
+function getBiggerWinnersAndLosers(scores) {
+  let keys = _.keys(scores);
+  let values = _.values(scores);
+  if (keys.length <= 1) {
+    logger.error("ERROR: keys.length = " + keys.length);
+    return {biggestWinners: [], biggestLosers: []};
+  }
+
+  let sortedScores = _.values(scores);
+  let biggest = sortedScores[sortedScores.length - 1];
+  let smallest = sortedScores[0];
+
+
+  let biggestWinners = [];
+  logger.debug("_.zip(keys, values): " + JSON.stringify(_.zip(keys, values)));
+  if (biggest > 0) {
+     biggestWinners = _.zip(keys, values).filter(a => a[1] == biggest).map(a => a[0]);
+  }
+  logger.debug("biggestWinners = " + biggestWinners + ", biggest = " + biggest);
+  let biggestLosers = [];
+  if (smallest < 0) {
+    biggestLosers =  _.zip(keys, values).filter(a => a[1] == smallest).map(a => a[0]);
+  }
+  logger.debug("biggestLosers = " + biggestLosers + ", smallest = " + smallest);
+  return {biggestWinners: biggestWinners, biggestLosers: biggestLosers};
+}
+
+function makeGameOverResponse(game) {
+  //scores
+  let response = {};
+  response.scores = game.scores;
+  let result = getBiggerWinnersAndLosers(response.scores);
+  response.bigWinners = result.biggestWinners;
+  response.bigLosers = result.biggestLosers;
+  response.isPlayed = game.isPlayed ? true : false;
+  response.gameOverTime = game.gameOverTime;
+  return response;
 }

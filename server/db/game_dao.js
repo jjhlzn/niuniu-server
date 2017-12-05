@@ -35,8 +35,60 @@ let getGame = (roomNo, isDoNothingWhenNotExist) => {
     });
 };
 
+let deleteGameFromRedis = (game) => {
+  if (game.roomNo == '123456')
+    return;
+
+  let resetGame = (game) => {
+    return redisClient.delAsync(gameUtils.gameKey(game.roomNo));
+  }
+
+  let resetSitdownPlayers = (game) => {
+    return redisClient.delAsync(gameUtils.sitdownPlayersKey(game.roomNo));
+  }
+  
+  let resetRobBankers = (game) => {
+    return redisClient.delAsync(gameUtils.robBankersKey(game.roomNo));
+  }
+  
+  let resetBetPlayers = (game) => {
+    return redisClient.delAsync(gameUtils.betPlayersKey(msg.roomNo));
+  }
+  
+  let resetShowCardPlayers = (game) => {
+    return redisClient.delAsync(gameUtils.showcardPlayersKey(game.roomNo));
+  }
+  
+  let resetReadyPlayers = (game) => {
+    return redisClient.delAsync(gameUtils.readyPlayersKey(game.roomNo));
+  }
+
+  return Promise.all([resetGame, resetSitdownPlayers, resetRobBankers, resetBetPlayers, resetShowCardPlayers, resetReadyPlayers]);
+}
+
+
+
+
+let saveGameRecord = (game) => {
+  let mongoConnection = connectMongo();
+  return mongoConnection.then(db =>{
+    return db.collection('game_records').insertOne(game)
+      .then( result => {
+        if (result.result.ok != 1) {
+          return Promise.reject("保存游戏历史记录失败：roomNo = " + game.roomNo);
+        } else {
+          //把redis中用户数据清空
+          return deleteGameFromRedis(game)
+        }
+      });
+  })
+}
+
+
+
 module.exports = {
   getSitPlayerIds: getSitPlayerIds,
-  getGame: getGame
+  getGame: getGame,
+  saveGameRecord: saveGameRecord
 }
 
