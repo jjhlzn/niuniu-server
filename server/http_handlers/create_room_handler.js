@@ -88,13 +88,14 @@ exports.handle = (req, res) => {
 function getRandomRoomNo() {
   let str = "";
   for(var i = 0; i < 6; i++) {
-    str += Math.round( Math.random() * 10000000  % 10 );
+    str += Math.floor( Math.random() * 10000000  % 10 );
   }
   return str;
 }
 
 function generateRoomNo(game) {
   game.roomNo = getRandomRoomNo();
+  logger.debug("roomNo = " + roomNo);
   return connectRedis().existsAsync(gameUtils.gameKey(game.roomNo))
     .then( exists => {
       if (exists) {

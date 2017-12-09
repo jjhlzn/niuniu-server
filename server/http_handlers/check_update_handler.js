@@ -27,6 +27,7 @@ exports.handle = (req, res) => {
   
   resp.isNeedUpdate = isNeedUpdate(json.platform, json.version);
   if (resp.isNeedUpdate) {
+    resp.newVersion = cur_android_verson;
     resp.updateUrl = "http://www.hengdianworld.com/images/niuniu.apk";
   }
 
