@@ -95,7 +95,7 @@ function getRandomRoomNo() {
 
 function generateRoomNo(game) {
   game.roomNo = getRandomRoomNo();
-  logger.debug("roomNo = " + roomNo);
+  logger.debug("roomNo = " + game.roomNo);
   return connectRedis().existsAsync(gameUtils.gameKey(game.roomNo))
     .then( exists => {
       if (exists) {
