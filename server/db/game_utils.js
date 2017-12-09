@@ -15,7 +15,7 @@ function setWinOrLoss(game, playerId, bankerId, playerInfo, bankerInfo) {
   } else { //牛相等的情况，看看最大的那种牌谁大
     let biggest1 = playerInfo.cards.sort(deck.compare).reverse()[0];
     let biggest2 = bankerInfo.cards.sort(deck.compare).reverse()[0];
-    if (deck.compare(biggest1, biggest2) == 1) {
+  if (deck.compare(biggest1, biggest2) == 1) {
       isBankerWin = false;
     } else {
       isBankerWin = true;
@@ -135,14 +135,14 @@ module.exports = {
   */
 
   
-  robBankerTimeout: 12000,
-  betTimeout: 12000,
-  showCardTimeout: 12000,
-  readyTimeout: 12000,
+  robBankerTimeout: 14000,
+  betTimeout: 13500,
+  showCardTimeout: 13500,
+  readyTimeout: 16000,
 
 
 
-/*  
+/*
   robBankerTimeout: 1000 * 60 * 60 * 24 * 10, //10天
   betTimeout:   1000 * 60 * 60 * 24 * 10,
   showCardTimeout:   1000 * 60 * 60 * 24 * 10,

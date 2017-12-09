@@ -103,6 +103,7 @@ function niu(game, cards) {
   }
   return {
     niu: niu,
+    //cardSequences: [3,0,1,4,2],
     cardSequences: cardSequences,
     multiple: multiple
   };

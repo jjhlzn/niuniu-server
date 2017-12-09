@@ -58,8 +58,8 @@ exports.handle = (req, res) => {
 
     let game = {};
     game.creater = userId;
-    //game.totalRoundCount = parseInt(json.jushu);
-    game.totalRoundCount = 1;
+    game.totalRoundCount = parseInt(json.jushu);
+    //game.totalRoundCount = 1;
     game.robBankerType = json.qz;
     game.fengshu = json.fengshu;
     game.wanfa = json.wanfa;

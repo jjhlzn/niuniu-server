@@ -110,9 +110,18 @@ exports.showcardHandler = (socket, io, handlers) => {
               logger.debug("after compute win or loss")
 
               let resultDict = {};
+              /*
+              resultDict = {
+                'test1': 4,
+                'test2': -4,
+                '7654321': 0
+              }
+              resultDict = {"7654321":-40,"test1":40};
+              */
+              
               playerIds.forEach(playerId => {
                 resultDict[playerId] = playerInfos[playerId].winOrLoss;
-              });
+              }); 
       
               //保存游戏的状态
               let isNeedSetTimer = false;
