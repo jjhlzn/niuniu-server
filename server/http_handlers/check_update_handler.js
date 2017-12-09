@@ -8,7 +8,7 @@ const _ = require('underscore');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 
-let cur_android_verson = '3.0.2';
+let cur_android_verson = '3.0.4';
 
 function isNeedUpdate(platform, version) {
   if (platform == 'Android') {
