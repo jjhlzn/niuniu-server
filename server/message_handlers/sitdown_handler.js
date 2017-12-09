@@ -47,7 +47,7 @@ exports.sitdownHandler = (socket) => {
     }
 
     let sit = (user) => {
-      this.user = user;
+      thisUser = user;
       return redisClient.hsetAsync(gameUtils.sitdownPlayersKey(msg.roomNo), msg.userId, msg.seat).then(res => {
         if (!res) {
           return Promise.reject(res);
