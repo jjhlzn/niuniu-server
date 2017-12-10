@@ -135,9 +135,9 @@ module.exports = {
   */
 
   
-  robBankerTimeout: 14000,
-  betTimeout: 13500,
-  showCardTimeout: 13500,
+  robBankerTimeout: 13000,
+  betTimeout: 12800,
+  showCardTimeout: 12400,
   readyTimeout: 16000,
 
 
