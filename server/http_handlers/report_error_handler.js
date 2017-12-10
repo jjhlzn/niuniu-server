@@ -16,7 +16,7 @@ exports.handle = (req, res) => {
   logger.debug("report_error reqJson: " + JSON.stringify(json));
   let mongoConnection = mongoConnect();
 
-  //if (process.env.NODE_ENV == 'production') {
+  if (process.env.NODE_ENV == 'production') {
     mongoConnection.then(db =>{
       db.collection('client_error_reports').insertOne(_.extend({createTime: moment().format('YYYY-MM-DD HH:mm:ss')}, json))
         .then( result => {
@@ -25,7 +25,7 @@ exports.handle = (req, res) => {
           }
         });
     });
-  //}
+  }
 
   res.end(JSON.stringify({status: 0}));
 }
