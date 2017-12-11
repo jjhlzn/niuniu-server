@@ -19,6 +19,7 @@ exports.dismissRoomHanler = (socket, io) => {
   //3. 如果都满足，解散房间。
 
    return (msg, Ack) => {
+    msg = JSON.parse(msg);
     logger.debug("Receive DimissRoom: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();

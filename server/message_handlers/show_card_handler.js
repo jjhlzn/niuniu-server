@@ -26,6 +26,7 @@ let locked = {};
 exports.showcardHandler = (socket, io, handlers) => {
 
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
     logger.debug("Receive ShowCard: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();
@@ -221,10 +222,10 @@ exports.createShowcardTimer = (socket, io, handlers) => {
                 playerIds.forEach( playerId => {
                   if (!betPlayerHash[playerId]) {
                     logger.debug(playerId + " hasn't showcard");
-                    handlers['showcardHandler'](socket, io, handlers)({
+                    handlers['showcardHandler'](socket, io, handlers)(JSON.stringify({
                       roomNo: game.roomNo,
                       userId: playerId
-                    })
+                    }))
                   }
                 });
               } )

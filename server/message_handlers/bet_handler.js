@@ -25,6 +25,7 @@ let locked = {};
  */
 exports.betHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
     logger.debug("Receive bet: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();
@@ -167,10 +168,10 @@ exports.createBetTimer = (socket, io, handlers) => {
                       userId: playerId,
                       bet: game.rounds[game.rounds.length - 1].players[playerId].bets[0]
                     }
-                    handlers['betHandler'](socket, io, handlers)(betReq);
+                    handlers['betHandler'](socket, io, handlers)(JSON.stringify(betReq));
                   }
                 });
-              })
+            })
           });
       }, gameUtils.betTimeout);
     }

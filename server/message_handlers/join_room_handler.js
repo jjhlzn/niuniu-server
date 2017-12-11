@@ -14,6 +14,7 @@ const handleUserNotDelegate = require('./not_delegate_handler').handleUserNotDel
 //将游戏的状态传给客户端，房间可能不存在，
 exports.joinRoomHandler = (socket, io) => {
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
     logger.debug("Receive JoinRoom: " + JSON.stringify(msg));
     socket.roomNo = msg.roomNo;
     socket.userId = msg.userId;

@@ -23,6 +23,7 @@ function checkMessage(msg) {
  */
 exports.startGameHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
     logger.debug("Receive StartGame: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();

@@ -13,6 +13,7 @@ const userDao = require('../db/user_dao');
 //那么用户一旦坐下，则用户的状态设置为在那个房间
 exports.sitdownHandler = (socket) => {
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
     logger.debug("Receive SitDown: " + JSON.stringify(msg));
     let redisClient = connectRedis();
 

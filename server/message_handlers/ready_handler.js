@@ -37,6 +37,7 @@ let createNewRound = (game) => {
  */
 exports.readyHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
     logger.debug("Receive Ready: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();
@@ -257,7 +258,7 @@ exports.createReadyTimer = (socket, io, handlers) => {
                             userId: playerId,
                             roomNo: game.roomNo
                           };
-                          handlers['readyHandler'](socket, io, handlers)(readyReq);
+                          handlers['readyHandler'](socket, io, handlers)(JSON.stringify(readyReq));
                         }
                       });
                     });

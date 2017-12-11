@@ -13,6 +13,7 @@ const userDao = require('../db/user_dao');
 
 exports.standupHandler = (socket, io) => {
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
     logger.debug("Receive StandUp: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();

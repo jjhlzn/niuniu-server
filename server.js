@@ -86,6 +86,8 @@ http.listen(3001);
 
 io.on('connection', socket => {
   
+  logger.debug("a new clent come in");
+  
   socket.on(messages.JoinRoom, joinRoomHandler(socket, io));
   socket.on(messages.DismissRoom, dismissRoomHanler(socket, io));
   socket.on(messages.LeaveRoom, leaveRoomHandler(socket, io));
@@ -102,6 +104,7 @@ io.on('connection', socket => {
 
   //连接中断，如果需要处理委托
   socket.on('disconnect', () => {
+    logger.debug("a client disconnect");
     if (socket.roomNo && socket.userId)
       handleUserDelegate(io, socket.roomNo, socket.userId)
   });

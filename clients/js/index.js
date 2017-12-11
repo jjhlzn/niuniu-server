@@ -18,44 +18,44 @@ let joinRoomReq = {
   userId: userId
 };
 
-socket.emit("JoinRoom", joinRoomReq, (msg) => {
+socket.emit("JoinRoom", JSON.stringify(joinRoomReq), (msg) => {
   console.log("join success");
 });
 
 $('#startGameButton').click( () => {
   console.log('start game click');
-  socket.emit('StartGame', {
+  socket.emit('StartGame', JSON.stringify({
     roomNo: roomNo,
     userId: userId
-  }, () => {
+  }), () => {
     console.log('Start Game Success');
   });
 });
 
 $('#delegateButton').click( () => {
   console.log('delegateButton click');
-  socket.emit('Delegate', {
+  socket.emit('Delegate', JSON.stringify({
     roomNo: roomNo,
     userId: userId
-  });
+  }));
 });
 
 
 $('#notDelegateButton').click( () => {
   console.log('notDelegateButton click');
-  socket.emit('NotDelegate', {
+  socket.emit('NotDelegate', JSON.stringify({
     roomNo: roomNo,
     userId: userId
-  });
+  }));
 });
 
 $('#resetRoomButton').click( () => {
   console.log("resetRoomButton click");
   mySeat = -1;
-  socket.emit('ResetRoom', {
+  socket.emit('ResetRoom', JSON.stringify({
     roomNo: roomNo,
     userId: userId
-  });
+  }));
 });
 
 //座位点击处理
@@ -72,7 +72,7 @@ $('#seatDiv button').click( (event) => {
     userId: userId
   };
 
-  socket.emit('SitDown', seatReq, (msg) => {
+  socket.emit('SitDown', JSON.stringify(seatReq), (msg) => {
     mySeat = seatIndex;
     //$('#seatDiv').hide();
   });
@@ -85,7 +85,7 @@ $('#standUpButton').click( () => {
     roomNo: roomNo,
     userId: userId
   }
-  socket.emit('StandUp', standUpReq, (msg) => {
+  socket.emit('StandUp', JSON.stringify(standUpReq), (msg) => {
     mySeat = -1;
   });
 });
@@ -105,7 +105,7 @@ $('.betButton').click( (event) => {
     bet: parseInt($(event.target).text())
   };
 
-  socket.emit('Bet', betReq, (msg) => {
+  socket.emit('Bet', JSON.stringify(betReq), (msg) => {
     console.log("bet success");
   });
 });
@@ -116,7 +116,7 @@ $('#showCardButton').click( ()=> {
     userId: userId
   };
 
-  socket.emit('ShowCard', showCardReq, (msg) => {
+  socket.emit('ShowCard', JSON.stringify(showCardReq), (msg) => {
     console.log('show card success');
   })
 });
@@ -127,7 +127,7 @@ $('#readyButton').click( () => {
     userId: userId
   };
 
-  socket.emit('Ready', readyReq, (msg) => {
+  socket.emit('Ready', JSON.stringify(readyReq), (msg) => {
     console.log('ready success');
   })
 });
@@ -168,7 +168,7 @@ function robClick(isRob) {
     userId: userId,
     isRob: isRob ? 1 : 0
   }
-  socket.emit('RobBanker', robReq, (msg) => {
+  socket.emit('RobBanker', JSON.stringify(robReq), (msg) => {
     console.log("has sent rob req sucess");
   });
 }

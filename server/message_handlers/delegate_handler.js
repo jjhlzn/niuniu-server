@@ -19,6 +19,8 @@ let handleUserDelegate = (io, roomNo, userId) => {
 
 let delegateHandler = (socket, io) => {
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
+    
     let roomNo = msg.roomNo;
     let userId = msg.userId;
 

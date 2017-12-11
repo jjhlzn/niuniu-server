@@ -58,6 +58,7 @@ function chooseBanker(game, robBankerHash) {
 exports.robBankerHandler = (socket, io, handlers) => {
 
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
     logger.debug("Receive RobBanker: " + JSON.stringify(msg));
     let redisClient = connectRedis();
 
@@ -206,7 +207,7 @@ exports.createRobBankerTimer = (socket, io, handlers) => {
                       userId: player
                     };
                     logger.debug(player + " haven't rob banker");
-                    handlers['robBankerHandler'](socket, io, handlers)(defaultRobBankerReq);
+                    handlers['robBankerHandler'](socket, io, handlers)(JSON.stringify(defaultRobBankerReq));
                   }
                 });
             });

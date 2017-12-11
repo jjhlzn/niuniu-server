@@ -13,6 +13,7 @@ const _ = require('underscore');
 //离开房间
 exports.leaveRoomHandler = (socket, io) =>  {
   return (msg, Ack) => {
+    msg = JSON.parse(msg);
     socket.leave(msg.roomNo);
     if (Ack) {
       Ack({status: 0});

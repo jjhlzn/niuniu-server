@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<meta http-equiv="Expires" content="0">
+	<meta name="description" content="牛魔王牛牛，乐在棋中，全民健身，趣味棋牌。牛魔王牛牛是一款休闲竞技游戏，推崇趣味竞技，提倡创新、协调、绿色、开放、共享。" />
+
+	<title>牛魔王牛牛</title>
+
+  <script src="jquery/dist/jquery.min.js"></script>
+	<script>
+		// 是否是安卓
+		function isAndroid() {
+			var u = navigator.userAgent;
+			if (u.indexOf('Android') > -1 || u.indexOf('Linux') > -1) { //安卓手机
+				return true;
+			}
+			return false;
+		}
+
+		function isIOS() {
+			var u = navigator.userAgent;
+			var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+			return isiOS;
+		}
+
+		function isRunOnWeChat() {
+			var ua = navigator.userAgent.toLowerCase();
+			if (ua.match(/MicroMessenger/i) == "micromessenger") {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function UrlParameters() {
+			var urlIndex = window.location.href.indexOf("?");
+			if (urlIndex) {
+				var parameters = window.location.href.substring(urlIndex + 1);
+				if (parameters) {
+					var arrayParam = parameters.split("&");  //参数数组
+					var index; var name; var value;
+					for (var i = 0; i < arrayParam.length; i++) {
+						index = arrayParam[i].indexOf("=");
+						name = arrayParam[i].substring(0, index);
+						value = arrayParam[i].substring(index + 1);
+						this[name] = value;
+					}
+				}
+			}
+		}
+
+		function openApp(key, refresh) {
+			var isrefresh = refresh; // 获得refresh参数  
+			if (isrefresh == 1) {
+				return
+			}
+			window.location.href = 'wx2a90fef5d11b1f72://?room='+key;
+			/*
+			window.setTimeout(function () {
+				window.location.href += '&refresh=1' // 附加一个特殊参数，用来标识这次刷新不要再调用myapp:// 了  
+			}, 500);
+			*/
+		}
+
+		function enterRoom() {
+			var browser = {
+				versions: function () {
+					var u = navigator.userAgent, app = navigator.appVersion;
+					return {//移动终端浏览器版本信息
+						trident: u.indexOf('Trident') > -1, //IE内核
+						presto: u.indexOf('Presto') > -1, //opera内核
+						webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+						gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+						mobile: !!u.match(/AppleWebKit.*Mobile.*/) || !!u.match(/AppleWebKit/), //是否为移动终端
+						ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+						android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+						iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者QQHD浏览器
+						iPad: u.indexOf('iPad') > -1, //是否iPad
+						weixin: u.match(/MicroMessenger/i), //微信浏览器
+						webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部
+					};
+				}(),
+				language: (navigator.browserLanguage || navigator.language).toLowerCase()
+			};
+
+			if (!browser.versions.weixin) {
+				if (browser.versions.android) {
+					var urlParams = new UrlParameters();
+					if (typeof urlParams != "undefined" && urlParams.room && 0 != urlParams.room) {
+
+						//alert(" room : " + urlParams.room);
+
+						openApp(urlParams.room, urlParams.refresh);
+					}
+				}
+				else if (browser.versions.ios || browser.versions.iphone || browser.versions.ipad) {
+					var urlParams = new UrlParameters();
+					if (typeof urlParams != "undefined" && urlParams.room && 0 != urlParams.room) {
+
+						//alert(" room : " + urlParams.room);
+
+						openApp(urlParams.room, urlParams.refresh);
+					}
+				}
+			}
+		}
+
+		$(document).ready(function () {
+
+			enterRoom();
+
+			initialize();
+			function initialize() {
+				$('.common-android').removeClass('common-hide');
+				$('.common-ios').removeClass('common-hide');
+
+				// 如果在微信中打开，直接弹遮罩
+				if (true == isRunOnWeChat()) {
+					$('#mask').removeClass("common-hide");
+				}
+			}
+			$('#download-android').on('click', function (e) {
+				if (true == isRunOnWeChat()) {
+					e.preventDefault();
+					$('#mask').removeClass("common-hide");
+				}
+			});
+			$('#download-ios').on('click', function (e) {
+				if (true == isRunOnWeChat()) {
+					e.preventDefault();
+					$('#mask').removeClass("common-hide");
+				}
+			});
+			$('#mask').on('click', function () {
+				//$('#mask').addClass("common-hide");
+			});
+		});
+	</script>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		html,
+		body {
+			background: rgb(248, 248, 248);
+			font-family: "Microsoft YaHei" ! important;
+			text-align: center;
+		}
+
+		.hp {}
+
+		.common-center {
+			margin-left: auto;
+			margin-right: auto;
+			text-align: center;
+		}
+
+		.common-hide {
+			display: none;
+		}
+
+		.hp-head {
+			padding-top: 24px;
+			padding-bottom: 24px;
+			position: relative;
+			text-align: center;
+			background: #fff;
+		}
+
+		.hp-head img {
+			width: 221px;
+			height: 66px;
+		}
+
+		.hp-desc {
+			padding-top: 24px;
+			padding-bottom: 24px;
+			background: rgb(248, 248, 248);
+			text-align: center;
+		}
+
+		.hp-desc-title {
+			color: #464646;
+			font-size: 24px;
+			margin-bottom: 20px;
+		}
+
+		.hp-desc-detail {
+			font-size: 13px;
+			color: #9f9f9f;
+			margin-bottom: 10px;
+		}
+
+		.hp-desc-logo {
+			margin-top: 24px;
+			width: 80px;
+			height: 80px;
+		}
+
+		.hp-download {
+			text-align: center;
+			margin-left: 12px;
+			margin-right: 12px;
+		}
+
+		.hp-download-btn {
+			width: 300px;
+			height: 64px;
+		}
+
+		.hp-mask {}
+
+		.hp-mask-background {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: #000;
+			opacity: 0.6;
+		}
+
+		.hp-mask-instruction {
+			position: fixed;
+			top: 6px;
+			right: 8px;
+			width: 200px;
+			height: 137px;
+		}
+
+		.hp-guid {}
+
+		.hp-guid img {
+			max-width: 300px;
+			display: block;
+			margin-top: 16px;
+		}
+
+		.hp-guid-title {
+			margin-top: 10px;
+			color: #ffa323;
+			font-size: 15px;
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- 微信分享缩图图 -->
+	<img src="./image/icon_300x300.jpg" width="0" height="0" />
+
+	<!-- head -->
+	<!-- 描述 -->
+	<section class="hp-desc">
+		<p class="hp-desc-title">牛魔王牛牛</p>
+		<p class="hp-desc-detail">
+			约局神器
+		</p>
+		<p class="hp-desc-detail">
+			与现实中好友一起线上玩游戏。
+		</p>
+		<p class="hp-desc-detail">
+			全面支持安卓、iOS客户端，随时随地想玩就玩。
+		</p>
+		<img class="common-center hp-desc-logo" src="./image/icon_300x300.jpg">
+	</section>
+	<!-- 下载 -->
+	<section class="hp-download">
+		<!-- android下载链接 -->
+		<a class="common-android hp-download-download common-hide" href="http://a.de0.cc/rmeyie">
+			<img id="download-android" class="common-center hp-download-btn" src="./image/android_btn_download.png">
+		</a>
+	</section>
+
+	<section class="hp-download">
+		<!-- ios下载链接 -->
+		<a class="common-ios hp-download-download common-hide" href="http://a.de0.cc/JZvA7b">
+			<img id="download-ios" class="common-center hp-download-btn" src="./image/ios_btn_download.png">
+		</a>
+	</section>
+
+
+	<section id="mask" class="common-hide hp-mask">
+		<div class="hp-mask-background"></div>
+		<img class="hp-mask-instruction" src="./image/instruction.png">
+	</section>
+</body>
+
+</html>
