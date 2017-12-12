@@ -19,11 +19,13 @@ const logger = require('../utils/logger').logger(path.basename(__filename));
 
 let locked = {};
 
+
+
 /**
  * 亮牌处理器。接受客户端的亮牌，如果所有的玩家都亮牌了，
  * 则跳转到下一个游戏状态。
  */
-exports.showcardHandler = (socket, io, handlers) => {
+let showcardHandler = (socket, io, handlers) => {
 
   return (msg, Ack) => {
     msg = JSON.parse(msg);
@@ -195,7 +197,7 @@ exports.showcardHandler = (socket, io, handlers) => {
   }
 }
 
-exports.createShowcardTimer = (socket, io, handlers) => {
+let createShowcardTimer = (socket, io, handlers) => {
   return (checkResult) => {
     if (checkResult.isSetTimer) {
       setTimeout( ()=> {
@@ -235,7 +237,7 @@ exports.createShowcardTimer = (socket, io, handlers) => {
   }
 }
 
-function getBiggerWinnersAndLosers(scores) {
+let  getBiggerWinnersAndLosers = (scores) => {
   let keys = _.keys(scores);
   let values = _.values(scores);
   if (keys.length <= 1) {
@@ -243,10 +245,11 @@ function getBiggerWinnersAndLosers(scores) {
     return {biggestWinners: [], biggestLosers: []};
   }
 
-  let sortedScores = _.values(scores);
+  let sortedScores = values.sort( (a, b) => {return a - b});
+  logger.debug("sortedScores: " + sortedScores);
   let biggest = sortedScores[sortedScores.length - 1];
   let smallest = sortedScores[0];
-
+  logger.debug("biggest = " + biggest + ", smallest = " + smallest);
 
   let biggestWinners = [];
   logger.debug("_.zip(keys, values): " + JSON.stringify(_.zip(keys, values)));
@@ -272,4 +275,10 @@ function makeGameOverResponse(game) {
   response.isPlayed = game.isPlayed ? true : false;
   response.gameOverTime = game.gameOverTime;
   return response;
+}
+
+module.exports = {
+  showcardHandler: showcardHandler,
+  createShowcardTimer: createShowcardTimer,
+  getBiggerWinnersAndLosers: getBiggerWinnersAndLosers
 }
