@@ -240,26 +240,29 @@ let createShowcardTimer = (socket, io, handlers) => {
 let  getBiggerWinnersAndLosers = (scores) => {
   let keys = _.keys(scores);
   let values = _.values(scores);
-  if (keys.length <= 1) {
-    logger.error("ERROR: keys.length = " + keys.length);
+  if (values.length <= 1) {
+    logger.error("ERROR: values.length = " + values.length);
     return {biggestWinners: [], biggestLosers: []};
   }
 
-  let sortedScores = values.sort( (a, b) => {return a - b});
+  let sortedScores = _.zip(keys, values).sort( (a, b) => a[1] - b[1]);
   logger.debug("sortedScores: " + sortedScores);
-  let biggest = sortedScores[sortedScores.length - 1];
-  let smallest = sortedScores[0];
+  keys = sortedScores.map( a => a[0]);
+  values = sortedScores.map( a => a[1]);
+ 
+  let biggest = values[sortedScores.length - 1];
+  let smallest = values[0];
   logger.debug("biggest = " + biggest + ", smallest = " + smallest);
 
   let biggestWinners = [];
-  logger.debug("_.zip(keys, values): " + JSON.stringify(_.zip(keys, values)));
+  //logger.debug("_.zip(keys, values): " + JSON.stringify(_.zip(keys, values)));
   if (biggest > 0) {
-     biggestWinners = _.zip(keys, values).filter(a => a[1] == biggest).map(a => a[0]);
+     biggestWinners = sortedScores.filter(a => a[1] == biggest).map(a => a[0]);
   }
   logger.debug("biggestWinners = " + biggestWinners + ", biggest = " + biggest);
   let biggestLosers = [];
   if (smallest < 0) {
-    biggestLosers =  _.zip(keys, values).filter(a => a[1] == smallest).map(a => a[0]);
+    biggestLosers =  sortedScores.filter(a => a[1] == smallest).map(a => a[0]);
   }
   logger.debug("biggestLosers = " + biggestLosers + ", smallest = " + smallest);
   return {biggestWinners: biggestWinners, biggestLosers: biggestLosers};
