@@ -5,6 +5,7 @@ const _ = require('underscore');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 const deck = require('../deck');
+const moment = require('moment');
 
 function setWinOrLoss(game, playerId, bankerId, playerInfo, bankerInfo) {
   let isBankerWin = true;
@@ -37,6 +38,7 @@ function setWinOrLoss(game, playerId, bankerId, playerInfo, bankerInfo) {
 //计算游戏当前局的输赢关系
 function computeWinOrLoss(game) {
   let round = game.rounds[game.rounds.length - 1];
+  round.endTime = moment().format('YYYY-MM-DD HH:mm:ss');
   let bankerId = round.banker;
   let playersDict = round.players;
   _.keys(playersDict).forEach(playerId => {

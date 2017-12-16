@@ -15,13 +15,14 @@ const currentRoundPlayerInfos = require('../db/game_utils').currentRoundPlayerIn
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 const robBankerHandler = require('./rob_banker_handler').robBankerHandler;
-
+const moment = require('moment');
 
 let locked = {};
  
 let createNewRound = (game) => {
   logger.debug("Create New round");
   let round = {
+    startTime: moment().format('YYYY-MM-DD HH:mm:ss'),
     banker: '',
     players: {}
   };

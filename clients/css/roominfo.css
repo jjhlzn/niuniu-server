@@ -1,0 +1,138 @@
+#roomInfoDiv{
+  border: 1px solid gray;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+/**** 一局里面的每个玩家的Div  ***/
+
+.roundDiv {
+  border-collapse: collapse;
+  border: 1px solid gray; 
+  margin-top: 2px;
+}
+
+.roundInfo {
+  padding-top: 10px;
+  padding-left: 15px;
+}
+
+.playerContainer {
+  border: 1px solid rgba(151, 151, 151, 0.5); 
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin: 10px;
+  margin-top: 0px;
+}
+
+.userInfo {
+  margin-left: 2px;
+}
+.userInfo2 {
+  margin-left: 2px;
+}
+
+
+.playerContainer p {
+  text-align: left;
+  font-size: 10px;
+  margin: 0px;
+  padding: 0px;
+  width: 62px;
+  
+  white-space:nowrap; 
+  overflow:hidden; 
+  text-overflow:clip;
+  /* border: 1px solid gray; */
+}
+
+.playerContainer .score {
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+}
+
+.playerContainer .score_win {
+  color: red;
+}
+
+.playerContainer .score_loss {
+  color: green;
+}
+
+.playerContainer .banker {
+  color: red;
+  font-weight: bold;
+}
+
+.playerContainer .bet {
+}
+
+.cards{
+  margin-top: 10px;
+  margin-bottom: 0px;
+  padding: 0;
+  height: 55px;
+   /* border: 1px solid gray; */
+}
+
+.userImage {
+  width: 46px;
+   height: 46px;
+}
+
+.card {
+  margin: 0;
+  height: 50px;
+  width: 39px;
+}
+
+
+
+.card1{
+  /* border: 1px solid gray; */
+  position:absolute;
+  left:40px;
+  z-index:0;
+}
+.card2{
+  position:absolute;
+  /* border: 1px solid red; */
+  left:55px;
+  z-index:1;
+}
+
+.card3{
+  /* border: 1px solid blue; */
+  position:absolute;
+  left:70px;
+  z-index:2;
+}
+.card4{
+  /* border: 1px solid green; */
+  position:absolute;
+  left:85px;
+  z-index:3;
+}
+.card5{
+  /* border: 1px solid yellowgreen; */
+  position:absolute;
+  left:100px;
+  z-index:4;
+}
+
+.niuImage{
+   height: 30px;
+   width: 50px;
+ }
+
+.niu{
+ /* border: 1px solid rgb(156, 19, 83); */
+  position:absolute;
+  top: 85px;
+  left:65px;
+  z-index:5;
+  height: 25px;
+  width: 40px;
+}
+
