@@ -8,7 +8,7 @@ const _ = require('underscore');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 
-let cur_android_verson = '3.0.6';
+let cur_android_verson = '3.0.7';
 let cur_iOS_version = '3.0.6';
 
 function isNeedUpdate(platform, version) {
