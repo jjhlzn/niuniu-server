@@ -72,6 +72,7 @@ const logger = require('./server/utils/logger').logger(path.basename(__filename)
 
 //logger.debug("readyHandler = " + readyHandler)
 
+app.use('/introduction.html', shareHandle);
 app.use('/share', shareHandle);
 app.use('/checkuseringame', checkuserInGameHandle);
 app.use('/createroom', createRoomHandle);

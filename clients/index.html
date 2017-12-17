@@ -1,85 +1,68 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>niuniu client</title>
-    <style>
-    </style>
 
-    <!-- <script src="/socket.io/socket.io.js"></script> -->
-    <script src="/socket.io-client/dist/socket.io.js"></script> 
-    <script src="/jquery/dist/jquery.js"></script>
-    
-  </head>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-  <body>
-    <div>
-      <p>游戏状态</p>
-      <p>
-        <p>
-          <label>状态：</label><label>未开始</label>
-        </p>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<meta http-equiv="Expires" content="0">
+	<meta name="description" content="" />
 
-        <p>
-          <label>玩家：</label> <label id="playersLabel"></label>
-        </p>
+	<title>贝斯特棋牌</title>
+ 
+	<link rel="stylesheet" type="text/css" href="./css/share.css">
+</head>
 
-        <p>
-          <label>庄家：</label><label id="bankerLabel"></label>
-        </p>
+<body>
 
-        <p>
-          <button id="resetRoomButton">重置</button>
-        </p>
-      </p>
-      
-    </div>
-
-    <button id="startGameButton">开始</button>
-    <button id="delegateButton">切换到后台</button>
-    <button id="notDelegateButton">回到前台</button>
-    <button id="standUpButton">站起</button>
-    <div id="seatDiv">
-     
-      <div>
-        <button id="seat0">座位A</button>
-        <button id="seat1">座位B</button>
-        <button id="seat2">座位C</button>
-        <button id="seat3">座位D</button>
-        <button id="seat4">座位E</button>
-        <button id="seat5">座位F</button>
-      </div>
-    </div>
-
-    <div id="cardsDiv"> 
-        <p>我的牌：<span id="cardsDiv_myCards"></span> </p>    
-    </div>
-
-    <div id="robBankerDiv">
-      <button id='robButton'>抢庄</button> <button id='notRobButton'>不抢</button>
-    </div>
-
-    <div id="betDiv">
-      <div>下注：</div>
-      <div>
-        <button class="betButton">4</button> <button class="betButton">6</button> <button class="betButton">8</button>
-      </div>
-    </div>
-
-    <div id="showCardDiv">
-        <div><p></p></div>
-        <div>
-          <button id="showCardButton">亮牌</button>
-        </div>
-    </div>
-
-    <div id="nextRoundReadyDiv">
-      <div><p></p></div>
-      <div>
-        <button id="readyButton">准备</button>
-      </div>
-  </div>
-  </body>
+	<!-- 微信分享缩图图 -->
+	<img src="./images/icon.jpg" width="0" height="0" />
+  
+	<!-- head -->
+	<!-- 描述 -->
+	<section class="hp-desc">
+		<p class="hp-desc-title">贝斯特棋牌</p>
+		<p class="hp-desc-detail">
+			与现实中好友一起线上玩棋牌游戏。
+		</p>
+		<p class="hp-desc-detail">
+			全面支持安卓、iOS客户端，随时随地想玩就玩。
+		</p>
+		<img class="common-center hp-desc-logo" src="./images/icon.png">
+	</section>
 
 
-  <script src="/js/index.js"></script>
+	<!-- 下载 -->
+	<section class="hp-download">
+		<!-- android下载链接 -->
+		<a class="common-android hp-download-download common-hide" href="http://www.hengdianworld.com/images/niuniu.apk">
+			<img id="download-android" class="common-center hp-download-btn" src="http://ox.kawa88.com/image/android_btn_download.png">
+		</a>
+	</section>
+
+	<section class="hp-download" style="display:none;">
+		<!-- ios下载链接 -->
+		<a class="common-ios hp-download-download common-hide" href="">
+			<img id="download-ios" class="common-center hp-download-btn" src="http://ox.kawa88.com/image/ios_btn_download.png">
+    </a>
+  </section>
+
+  <section class="hp-download" style="display:none;">
+      <!-- ios下载链接 -->
+      <a id='openroom' class="common-ios hp-download-download common-hide" href="">
+        <img id="download-ios" class="common-center hp-download-btn" src="./js/btn_openroom.png">
+      </a>
+    </section>
+
+	<section id="mask" class="common-hide hp-mask">
+		<div class="hp-mask-background"></div>
+		<img class="hp-mask-instruction" src="http://ox.kawa88.com/image/instruction.png">
+	</section>
+</body>
+
+<script src="jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="./js/share.js"></script> 
 </html>

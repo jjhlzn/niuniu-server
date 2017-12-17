@@ -12,6 +12,6 @@ const logger = require('../utils/logger').logger(path.basename(__filename));
 
 exports.handle = (req, res) => {
   //res.send('Hello World');
-  logger.debug(path.resolve('.') + '/clients/share.html');
-  res.sendFile(path.resolve('.') + '/clients/share.html');
+  logger.debug(path.resolve('.') + '/clients/index.html');
+  res.sendFile(path.resolve('.') + '/clients/index.html');
 }
