@@ -39,7 +39,7 @@ let createNewRound = (game) => {
 exports.readyHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.debug("Receive Ready: " + JSON.stringify(msg));
+    logger.info("Receive Ready: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();
 

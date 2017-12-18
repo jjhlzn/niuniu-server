@@ -29,7 +29,7 @@ let showcardHandler = (socket, io, handlers) => {
 
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.debug("Receive ShowCard: " + JSON.stringify(msg));
+    logger.info("Receive ShowCard: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();
 

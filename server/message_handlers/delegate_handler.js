@@ -24,7 +24,7 @@ let delegateHandler = (socket, io) => {
     let roomNo = msg.roomNo;
     let userId = msg.userId;
 
-    logger.debug("Receive DelegateGame: " + JSON.stringify(msg));
+    logger.info("Receive DelegateGame: " + JSON.stringify(msg));
 
     let setUserDelegate = () => {
       handleUserDelegate(io, roomNo, userId);

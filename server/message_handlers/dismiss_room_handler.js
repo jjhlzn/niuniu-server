@@ -20,7 +20,7 @@ exports.dismissRoomHanler = (socket, io) => {
 
    return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.debug("Receive DimissRoom: " + JSON.stringify(msg));
+    logger.info("Receive DimissRoom: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();
     let checkCreater = (game) => {

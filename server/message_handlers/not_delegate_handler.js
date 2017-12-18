@@ -24,7 +24,7 @@ let notDelegateHandler = (socket, io) => {
     let roomNo = msg.roomNo;
     let userId = msg.userId;
 
-    logger.debug("Receive NotDelegateGame: " + JSON.stringify(msg));
+    logger.info("Receive NotDelegateGame: " + JSON.stringify(msg));
 
     let setUserNotDelegate = () => {
       handleUserNotDelegate(io, roomNo, userId);

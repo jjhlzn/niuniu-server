@@ -26,7 +26,7 @@ let locked = {};
 exports.betHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.debug("Receive bet: " + JSON.stringify(msg));
+    logger.info("Receive bet: " + JSON.stringify(msg));
 
     let redisClient = connectRedis();
     if (checkMessage() != null) {
