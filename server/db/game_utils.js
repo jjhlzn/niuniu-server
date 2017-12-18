@@ -95,6 +95,11 @@ function hasNextRound(game) {
   return game.currentRoundNo < game.totalRoundCount;
 }
 
+function logNewRequest(name, msg) {
+  logger.info("--------------------------------------------------------------------------------------");
+  logger.info('Receive ' + name + ": " + JSON.stringify(msg));
+}
+
 
 module.exports = {
   gameKey: roomNo => {
@@ -156,5 +161,7 @@ module.exports = {
   currentRoundPlayerInfos: currentRoundPlayerInfos,
   hasNextRound: hasNextRound,
 
-  computeWinOrLoss: computeWinOrLoss
+  computeWinOrLoss: computeWinOrLoss,
+
+  logNewRequest: logNewRequest
 }

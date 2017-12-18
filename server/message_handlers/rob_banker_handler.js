@@ -11,8 +11,9 @@ const createFailHandler = require('./share_functions').createFailHandler;
 const betHanlder= require('./bet_handler').betHandler;
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
+const lock = require('../utils/lock').createLock();
 
-let locked = {};
+//let locked = {};
 
 function checkMessage(msg) {
   return null;
@@ -59,7 +60,7 @@ exports.robBankerHandler = (socket, io, handlers) => {
 
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.info("Receive RobBanker: " + JSON.stringify(msg));
+    gameUtils.logNewRequest("Rob Banker", msg)
     let redisClient = connectRedis();
 
     if (checkMessage() != null) {
@@ -133,16 +134,18 @@ exports.robBankerHandler = (socket, io, handlers) => {
       return getGame(msg.roomNo).then(
         game => {
           logger.debug("game.state = " + game.state);
-          if (game.state == gameState.RobBanker && !locked[msg.roomNo]) {
-            locked[msg.roomNo] = 1;
+          if (game.state == gameState.RobBanker && lock.get(game.roomNo)) {
+            //locked[msg.roomNo] = true;
+            //logger.debug("sendGoToChooseBankerNotify: get lock for room: " + msg.roomNo);
             let chooseResult = chooseBanker(game, checkResult.robBankerHash);
             //修改游戏的状态 和 庄家
             game.state = gameState.Bet;
             game.rounds[game.rounds.length - 1].banker = chooseResult.banker;
-            logger.debug("game.rounds[game.rounds.length - 1].banker = " + game.rounds[game.rounds.length - 1].banker);
+            logger.debug("banker = " + game.rounds[game.rounds.length - 1].banker);
             return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game))
               .then( res => {
-                delete locked[msg.roomNo];
+                //delete locked[msg.roomNo];
+                //logger.debug("sendGoToChooseBankerNotify: release lock for room: " + msg.roomNo);
                 if (!res) {
                   return Promise.reject("update game error, res = " + res);
                 }

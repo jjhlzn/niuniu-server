@@ -16,9 +16,7 @@ const hasNextRound = require('../db/game_utils').hasNextRound;
 const moment = require('moment');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
-
-let locked = {};
-
+const lock = require('../utils/lock').createLock();
 
 
 /**
@@ -29,7 +27,7 @@ let showcardHandler = (socket, io, handlers) => {
 
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.info("Receive ShowCard: " + JSON.stringify(msg));
+    gameUtils.logNewRequest("Show Card", msg)
 
     let redisClient = connectRedis();
 
@@ -98,29 +96,19 @@ let showcardHandler = (socket, io, handlers) => {
 
     let sendGoToCompareCardNotify = (checkResult) => {
       if (checkResult.isNeedSend) {
-
           return getGame(msg.roomNo).then( game => {
-            if (game.state == gameState.CheckCard && !locked[msg.roomNo]) {
-              locked[msg.roomNo] = true;
-              game.state = gameState.CheckCard;
+            logger.debug("game.state = " + game.state);
+            if (game.state == gameState.CheckCard && lock.get(game.roomNo) ) {
+              //logger.debug("sendGoToCompareCardNotify: get lock for room: " + msg.roomNo);
+              //game.state = gameState.CheckCard;
             
               let playerIds = currentRoundPalyerIds(game);
               let playerInfos = currentRoundPlayerInfos(game);
       
-              logger.debug("before compute win or loss")
               //计算输赢
               gameUtils.computeWinOrLoss(game);
-              logger.debug("after compute win or loss")
 
               let resultDict = {};
-              /*
-              resultDict = {
-                'test1': 4,
-                'test2': -4,
-                '7654321': 0
-              }
-              resultDict = {"7654321":-40,"test1":40};
-              */
               
               playerIds.forEach(playerId => {
                 resultDict[playerId] = playerInfos[playerId].winOrLoss;
@@ -144,7 +132,8 @@ let showcardHandler = (socket, io, handlers) => {
               logger.debug("scores: " + JSON.stringify(game.scores));
               return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game))
                 .then( res => {
-                  delete locked[msg.roomNo];
+                  //delete locked[msg.roomNo];
+                  //logger.debug("sendGoToCompareCardNotify: release lock for room: " + msg.roomNo);
                   if (!res) {
                     return Promise.reject("保存Game时出错, res = " + res);
                   }

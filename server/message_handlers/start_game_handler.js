@@ -24,7 +24,7 @@ function checkMessage(msg) {
 exports.startGameHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.info("Receive StartGame: " + JSON.stringify(msg));
+    gameUtils.logNewRequest("Start Game", msg)
 
     let redisClient = connectRedis();
     if (checkMessage() != null) {

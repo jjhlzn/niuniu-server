@@ -1,4 +1,3 @@
-
 "use strict";
 
 const connectRedis = require('../db/redis_connect').connect;
@@ -16,8 +15,9 @@ var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 const robBankerHandler = require('./rob_banker_handler').robBankerHandler;
 const moment = require('moment');
+const lock = require('../utils/lock').createLock();
 
-let locked = {};
+//let locked = {};
  
 let createNewRound = (game) => {
   logger.debug("Create New round");
@@ -39,7 +39,8 @@ let createNewRound = (game) => {
 exports.readyHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.info("Receive Ready: " + JSON.stringify(msg));
+
+    gameUtils.logNewRequest("Ready", msg);
 
     let redisClient = connectRedis();
 
@@ -171,13 +172,15 @@ exports.readyHandler = (socket, io, handlers) => {
             let game = hashs[0];
             let sitdownPlayers = hashs[1];
             game.sitdownPlayers = sitdownPlayers;
-            if (!locked[msg.roomNo]) {
-              locked[msg.roomNo] = true;
+            if (game.state == gameState.WaitForNextRound && lock.get(game.roomNo)) {
+              //locked[msg.roomNo] = true;
+              //logger.debug("sendGoToFirstDealNotify: get lock from room: " + game.roomNo);
 
               createNewRound(game);
               return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game))
                 .then( res => {
-                  delete locked[msg.roomNo];
+                  //delete locked[msg.roomNo];
+                  //logger.debug("sendGoToFirstDealNotify: release lock from room: " + game.roomNo);
                   if (!res) {
                     return Promise.reject("保存Game失败");
                   }

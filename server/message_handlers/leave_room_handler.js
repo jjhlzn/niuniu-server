@@ -14,6 +14,7 @@ const _ = require('underscore');
 exports.leaveRoomHandler = (socket, io) =>  {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
+    gameUtils.logNewRequest("Leave Room", msg)
     socket.leave(msg.roomNo);
     if (Ack) {
       Ack({status: 0});

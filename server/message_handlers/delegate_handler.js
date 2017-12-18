@@ -21,6 +21,8 @@ let delegateHandler = (socket, io) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
     
+    gameUtils.logNewRequest("Delegate", msg)
+
     let roomNo = msg.roomNo;
     let userId = msg.userId;
 

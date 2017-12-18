@@ -9,12 +9,16 @@ winston.addColors({
   db: 'magenta'
 });
 
+function pad(width, string, padding) { 
+  return (width <= string.length) ? string : pad(width, padding + string, padding)
+}
+
 const { createLogger, format, transports } = require('winston');
 const { combine,timestamp, label, printf } = format;
 const moment = require('moment');
 
 const myFormat = printf(info => {
-  return `${moment(info.timestamp).format('YYYY-MM-DDTHH:mm:ss,SSS')} [${info.label}] [${info.level}] ${info.message}`;
+  return `[${moment(info.timestamp).format('YYYY-MM-DD HH:mm:ss,SSS')}] [${pad(23, info.label, ' ')}] [${pad(5, info.level, ' ')}] ${info.message}`;
 });
   
 const createMyLogger = (myLabel) => {

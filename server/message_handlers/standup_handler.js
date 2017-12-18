@@ -14,7 +14,7 @@ const userDao = require('../db/user_dao');
 exports.standupHandler = (socket, io) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.info("Receive StandUp: " + JSON.stringify(msg));
+    gameUtils.logNewRequest("Standup", msg)
 
     let redisClient = connectRedis();
 

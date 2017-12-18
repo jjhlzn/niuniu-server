@@ -14,7 +14,7 @@ const userDao = require('../db/user_dao');
 exports.sitdownHandler = (socket) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.info("Receive SitDown: " + JSON.stringify(msg));
+    gameUtils.logNewRequest("Sitdown", msg)
     let redisClient = connectRedis();
 
     let thisGame = {};

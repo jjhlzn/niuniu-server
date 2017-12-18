@@ -16,7 +16,7 @@ const userDao = require('../db/user_dao');
 let resetRoomHandler = (socket) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.info("Receive ResetRoom: " + JSON.stringify(msg));
+    gameUtils.logNewRequest("Reset Room", msg)
 
     let redisClient = connectRedis();
 

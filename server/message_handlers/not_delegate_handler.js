@@ -20,11 +20,9 @@ let handleUserNotDelegate = (io, roomNo, userId) => {
 let notDelegateHandler = (socket, io) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    
+    gameUtils.logNewRequest("Not Delegate", msg)
     let roomNo = msg.roomNo;
     let userId = msg.userId;
-
-    logger.info("Receive NotDelegateGame: " + JSON.stringify(msg));
 
     let setUserNotDelegate = () => {
       handleUserNotDelegate(io, roomNo, userId);

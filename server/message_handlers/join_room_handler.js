@@ -15,7 +15,7 @@ const handleUserNotDelegate = require('./not_delegate_handler').handleUserNotDel
 function joinRoomHandler(socket, io){
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.info("Receive JoinRoom: " + JSON.stringify(msg));
+    gameUtils.logNewRequest("Join Room", msg)
     socket.roomNo = msg.roomNo;
     socket.userId = msg.userId;
 

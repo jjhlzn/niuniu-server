@@ -12,12 +12,12 @@ const currentRoundPalyerIds = require('../db/game_utils').currentRoundPlayerIds;
 const currentRoundPlayerInfos = require('../db/game_utils').currentRoundPlayerInfos;
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
-
+const lock = require('../utils/lock').createLock();
 function checkMessage(msg) {
   return null;
 }
 
-let locked = {};
+//let locked = {};
 
 /**
  * 下注处理器。接受客户端的下注，设置客户端的下注量，如果所有的闲家都下注了，
@@ -26,7 +26,7 @@ let locked = {};
 exports.betHandler = (socket, io, handlers) => {
   return (msg, Ack) => {
     msg = JSON.parse(msg);
-    logger.info("Receive bet: " + JSON.stringify(msg));
+    gameUtils.logNewRequest("Bet", msg)
 
     let redisClient = connectRedis();
     if (checkMessage() != null) {
@@ -77,8 +77,9 @@ exports.betHandler = (socket, io, handlers) => {
     let sendGoToSecondDealNotify = (checkResult) => {
       if (checkResult.isNeedSend) {
         return getGame(msg.roomNo).then( game => {
-          if (game.state == gameState.Bet && !locked[msg.roomNo]) {
-            locked[msg.roomNo] = true;
+          if (game.state == gameState.Bet && lock.get(game.roomNo)) {
+           // locked[game.roomNo] = true;
+            //logger.debug("sendGoToSecondDealNotify: get lock for room: " + game.roomNo);
             game.state = gameState.CheckCard;
             let round = game.rounds[game.rounds.length - 1];
 
@@ -88,7 +89,8 @@ exports.betHandler = (socket, io, handlers) => {
             })
             return redisClient.setAsync(gameUtils.gameKey(msg.roomNo), JSON.stringify(game))
               .then(res => {
-                delete locked[msg.roomNo];
+                //delete locked[game.roomNo];
+                //logger.debug("sendGoToSecondDealNotify: release lock for room: " + game.roomNo);
                 if (!res) {
                   return Promise.reject("设置Game失败");
                 }
