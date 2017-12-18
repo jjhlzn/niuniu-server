@@ -96,7 +96,7 @@ function hasNextRound(game) {
 }
 
 function logNewRequest(name, msg) {
-  logger.info("--------------------------------------------------------------------------------------");
+  logger.info("--------------------------------GET NEW REQUEST--------------------------------")
   logger.info('Receive ' + name + ": " + JSON.stringify(msg));
 }
 
