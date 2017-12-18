@@ -57,6 +57,8 @@ const shareHandle = require('./server/http_handlers/share_handler').handle;
 const checkUpdateHandle = require('./server/http_handlers/check_update_handler').handle;
 const reportErrorHandle = require('./server/http_handlers/report_error_handler').handle;
 const getGameInfoHanlde = require('./server/http_handlers/get_game_info_handler').handle;
+const checkIosAuditVersionHanlde = require('./server/http_handlers/check_ios_audit_version_handler').handle;
+const auditLoginHandler = require('./server/http_handlers/audit_login_handler').handle;
 
 const messages = require('./server/messages');
 const express = require('express');
@@ -72,6 +74,7 @@ const logger = require('./server/utils/logger').logger(path.basename(__filename)
 
 //logger.debug("readyHandler = " + readyHandler)
 
+
 app.use('/introduction.html', shareHandle);
 app.use('/share', shareHandle);
 app.use('/checkuseringame', checkuserInGameHandle);
@@ -81,6 +84,8 @@ app.use('/login', loginHandle);
 app.use('/checkupdate', checkUpdateHandle);
 app.use('/reporterror', reportErrorHandle);
 app.use('/getgameinfo', getGameInfoHanlde);
+app.use('/checkiosauditversion', checkIosAuditVersionHanlde);
+app.use('/auditlogin', auditLoginHandler);
 app.use(express.static('./clients'));
 app.use(express.static('./clients/images'));
 app.use(express.static('node_modules'));
