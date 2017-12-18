@@ -11,11 +11,11 @@ const logger = require('../utils/logger').logger(path.basename(__filename));
 let cur_iOS_version = '3.0.1';
 
 function isAuditVersion(platform, version) {
-  //if (platform == 'iOS') {
+  if (platform == 'iOS') {
     if (version == cur_iOS_version) {
       return true;
     }
-  //}
+  }
   return  false;
 }
 
