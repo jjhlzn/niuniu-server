@@ -8,7 +8,7 @@ const _ = require('underscore');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 
-let cur_iOS_version = '3.0.1';
+let cur_iOS_version = '3.0.x';
 
 function isAuditVersion(platform, version) {
   if (platform == 'iOS') {
