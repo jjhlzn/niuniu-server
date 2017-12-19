@@ -3,9 +3,9 @@ exports.makeServerUrl = () => {
 
     let servers = [
       'http://niu.yhkamani.com/socket.io/',
-      'http://blog.jinjunhang.com:3001/socket.io/'
+      //'http://blog.jinjunhang.com:3001/socket.io/'
     ];
-    
+
     let index = Math.floor(Math.random() * 10000) % 2;
 
     return servers[index]; // "http://192.168.1.114:3001"; //"
