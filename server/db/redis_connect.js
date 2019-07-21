@@ -13,7 +13,7 @@ let port = 6379;
 logger.debug("NODE_ENV: " + (process.env.NODE_ENV ? process.env.NODE_ENV : 'local'));
 
 if (process.env.NODE_ENV == 'production') {
-    redisUrl = 'niu.hengdianworld.com';
+    redisUrl = 'jf.yhkamani.com';
     port = 7777;
 } else {
     redisUrl = 'localhost';
