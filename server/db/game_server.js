@@ -2,7 +2,7 @@ exports.makeServerUrl = () => {
   if (process.env.NODE_ENV == 'production') {
 
     let servers = [
-      'http://niu.yhkamani.com/socket.io/',
+      'http://niu.hengdianworld.com/socket.io/',
       //'http://blog.jinjunhang.com:3001/socket.io/'
     ];
 
@@ -11,7 +11,8 @@ exports.makeServerUrl = () => {
     return servers[index]; // "http://192.168.1.114:3001"; //"
     //return "http://192.168.1.114:3001";
   } else {
-    return "http://192.168.31.175:3001/socket.io/"; // "http://192.168.1.114:3001"; //"
+    //return "http://192.168.31.175:3001/socket.io/"; // "http://192.168.1.114:3001"; //"
     //return "http://192.168.1.117:3001"; 
+	return "http://localhost:3001/socket.io/";
   }
 } 

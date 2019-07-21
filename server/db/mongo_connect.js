@@ -6,7 +6,7 @@ var MongoClient = require('mongodb').MongoClient
 var url = null;
 
 if (process.env.NODE_ENV == 'production') {
-  url = 'mongodb://jf.yhkamani.com:27017/niuniu';
+  url = 'mongodb://niu.hengdianworld:27017/niuniu';
 } else {
   url = 'mongodb://localhost:27017/niuniu';
 }
