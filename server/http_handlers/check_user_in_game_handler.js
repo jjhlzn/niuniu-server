@@ -29,7 +29,10 @@ exports.handle = (req, res) => {
     isInGame: false
   };
 
-  let failHandler = () => {
+  let failHandler = (err) => {
+    if(err) {
+      console.error(err)
+    }
     resp.status = -1;
     resp.end(JSON.stringify(resp));
   }

@@ -80,7 +80,8 @@ let imageUrls = [
   'http://www.85s.com/wp-content/uploads/2016/07/QQ%E6%88%AA%E5%9B%BE20160729180714_%E5%89%AF%E6%9C%AC.jpg'
 ];
 
-createUser({userId: '7654321', 'unionid': '7654321', nickname: '7654321', headimgurl: 'http://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83ercUcNbFyyGQUZEwiaSM5X1mylHCibYpfIiaYbysg2FA0ibtwVPBaxSRktg3h2UHTJTAaTwIJjsfrwlmg/0'});
+createUser({userId: '7654321', 'unionid': '7654321', nickname: '7654321', 
+headimgurl: 'https://b-ssl.duitang.com/uploads/item/201607/02/20160702122710_iRUXT.thumb.700_0.jpeg'});
 for(var i = 0; i < 10; i++) {
   let getUserId = (i) => {return 'test' + i};
   let getImageUrl = (i) => { return  imageUrls[i % imageUrls.length]};
