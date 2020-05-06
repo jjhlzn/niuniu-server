@@ -135,7 +135,7 @@ $(() => {
  
   $('.roundDiv').remove();
 
-  fetchGameInfo("123456");
+  fetchGameInfo("913227");
 
   
 });

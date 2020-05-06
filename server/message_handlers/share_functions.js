@@ -18,7 +18,7 @@ let getGame = (roomNo) => {
         return Promise.reject("获取房间出错[roomNo = " + roomNo +"]：res = " + res);
       }
 
-      return Promise.resolve(JSON.parse(res));
+      return JSON.parse(res);
     });
 };
 

@@ -2,7 +2,7 @@ exports.makeServerUrl = () => {
   if (process.env.NODE_ENV == 'production') {
 
     let servers = [
-      'http://niu.yhkamani.com/socket.io/',
+      'http://niu.hengdianworld.com/socket.io/',
       //'http://blog.jinjunhang.com:3001/socket.io/'
     ];
 

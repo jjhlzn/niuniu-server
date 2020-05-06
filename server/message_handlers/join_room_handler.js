@@ -19,13 +19,11 @@ function joinRoomHandler(socket, io){
     socket.roomNo = msg.roomNo;
     socket.userId = msg.userId;
 
-    let redisClient = connectRedis();
-
     let checkRoomState = (game) => {
       if (game.state == gameState.GameOver ) {
         return Promise.reject("该房间不存在");
       }
-      return Promise.resolve(game);
+      return game;
     };
 
     let setUserNotDelegate = (game) => {
@@ -57,6 +55,7 @@ function joinRoomHandler(socket, io){
 };
 
 //因为获取几个 这里可能会出现状态不一致的情况，概率有多高
+//设置Game对象的各个属性
 function populateGame(game){
   //如果已经经过第一次发牌，需要传递4张牌的信息
   //如果过了第二次发牌，需要传递5张牌的信息

@@ -96,6 +96,7 @@ io.on('connection', socket => {
   
   logger.debug("a new clent come in");
   
+  //create message handlers 
   socket.on(messages.JoinRoom, joinRoomHandler(socket, io));
   socket.on(messages.DismissRoom, dismissRoomHanler(socket, io));
   socket.on(messages.LeaveRoom, leaveRoomHandler(socket, io));
