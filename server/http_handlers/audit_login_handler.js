@@ -45,7 +45,7 @@ exports.handle = (req, res) => {
         if (!res) {
           redisClient.setAsync(gameUtils.userKey(user.userId), JSON.stringify(user));
         }
-      })
+      } )
   }
 
   let done = () => {

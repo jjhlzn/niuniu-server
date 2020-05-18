@@ -15,8 +15,11 @@ logger.debug("NODE_ENV: " + (process.env.NODE_ENV ? process.env.NODE_ENV : 'loca
 if (process.env.NODE_ENV == 'production') {
     redisUrl = 'niu.hengdianworld.com';
     port = 7777;
-} else {
-    redisUrl = 'niu.hengdianworld.com';
+} else if (process.env.NODE_ENV == 'test') {
+    redisUrl = 'testniu.hengdianworld.com';
+    port = 7777;
+}  else {
+    redisUrl = 'testniu.hengdianworld.com';
 }
 
 var redisConfig = {
