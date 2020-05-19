@@ -14,7 +14,6 @@ const express = require('express');
 
 module.exports = {
     registerRoutes: function(app) {
-
         app.use('/introduction.html', shareHandle);
         app.use('/share', shareHandle);
         app.use('/checkuseringame', checkuserInGameHandle);

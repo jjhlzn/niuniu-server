@@ -1,8 +1,6 @@
 
 const _ = require('underscore');
-
-var path = require('path');
-const logger = require('../utils/logger').logger(path.basename(__filename));
+const logger = require('../utils/logger').logger(require('path').basename(__filename));
 const connectRedis = require('./redis_connect').connect;
 const connectMongo = require('./mongo_connect').mongoConnect;
 const closeMongoConnect = require('./mongo_connect').closeMongoConnect;
