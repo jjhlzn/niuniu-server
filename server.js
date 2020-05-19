@@ -17,7 +17,7 @@ io.on('connection', socket => {
   logger.debug("a new clent come in");
   //register 牛牛 message handlers 
   registerNiuNiuHandlers(io, socket)
-
+  
 });
 
 http.listen(3001);

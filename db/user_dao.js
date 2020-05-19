@@ -3,9 +3,9 @@ const _ = require('underscore');
 
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
-const connectRedis = require('../db/redis_connect').connect;
-const connectMongo = require('../db/mongo_connect').mongoConnect;
-const closeMongoConnect = require('../db/mongo_connect').closeMongoConnect;
+const connectRedis = require('./redis_connect').connect;
+const connectMongo = require('./mongo_connect').mongoConnect;
+const closeMongoConnect = require('./mongo_connect').closeMongoConnect;
 const gameUtils = require('./game_utils');
 
 function getUser(userId, isDoNothingWhenNotExists) {
