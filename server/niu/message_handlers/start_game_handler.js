@@ -1,17 +1,17 @@
 "use strict";
 
-const connectRedis = require('../db/redis_connect').connect;
-const gameUtils = require('../db/game_utils');
+const connectRedis = require('../../db/redis_connect').connect;
+const gameUtils = require('../../db/game_utils');
 const getGame = require('./share_functions').getGame;
 const shareFunctions = require('./share_functions');
 const createFailHandler = require('./share_functions').createFailHandler;
-const gameState = require('../game_state');
+const gameState = require('../../game_state');
 const messages = require('../messages');
-const deck = require('../deck');
+const deck = require('../../deck');
 const _ = require('underscore');
 var path = require('path');
-const logger = require('../utils/logger').logger(path.basename(__filename));
-const userDao = require('../db/user_dao');
+const logger = require('../../utils/logger').logger(path.basename(__filename));
+const userDao = require('../../db/user_dao');
 
 function checkMessage(msg) {
   return null;

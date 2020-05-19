@@ -1,22 +1,22 @@
 "use strict";
 
-const connectRedis = require('../db/redis_connect').connect;
+const connectRedis = require('../../db/redis_connect').connect;
 
-const gameUtils = require('../db/game_utils');
+const gameUtils = require('../../db/game_utils');
 const messages = require('../messages');
 const _ = require('underscore');
 const createFailHandler = require('./share_functions').createFailHandler;
 const getGame = require('./share_functions').getGame;
-const gameState = require('../game_state');
-const currentRoundPalyerIds = require('../db/game_utils').currentRoundPlayerIds;
-const currentRoundPlayerInfos = require('../db/game_utils').currentRoundPlayerInfos;
-const gameDao = require('../db/game_dao');
-const userDao = require('../db/user_dao');
-const hasNextRound = require('../db/game_utils').hasNextRound;
+const gameState = require('../../game_state');
+const currentRoundPalyerIds = require('../../db/game_utils').currentRoundPlayerIds;
+const currentRoundPlayerInfos = require('../../db/game_utils').currentRoundPlayerInfos;
+const gameDao = require('../../db/game_dao');
+const userDao = require('../../db/user_dao');
+const hasNextRound = require('../../db/game_utils').hasNextRound;
 const moment = require('moment');
 var path = require('path');
-const logger = require('../utils/logger').logger(path.basename(__filename));
-const lock = require('../utils/lock').createLock();
+const logger = require('../../utils/logger').logger(path.basename(__filename));
+const lock = require('../../utils/lock').createLock();
 
 
 /**

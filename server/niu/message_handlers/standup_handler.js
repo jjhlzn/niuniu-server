@@ -1,14 +1,14 @@
 "use strict";
 
-const connectRedis = require('../db/redis_connect').connect;
-const gameUtils = require('../db/game_utils');
+const connectRedis = require('../../db/redis_connect').connect;
+const gameUtils = require('../../db/game_utils');
 const messages = require('../messages');
 const getGame = require('./share_functions').getGame;
 const createFailHandler = require('./share_functions').createFailHandler;
-const gameState = require('../game_state');
+const gameState = require('../../game_state');
 var path = require('path');
-const logger = require('../utils/logger').logger(path.basename(__filename));
-const userDao = require('../db/user_dao');
+const logger = require('../../utils/logger').logger(path.basename(__filename));
+const userDao = require('../../db/user_dao');
 
 
 exports.standupHandler = (socket, io) => {

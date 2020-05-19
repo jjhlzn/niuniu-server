@@ -2,13 +2,13 @@
 
 "use strict";
 
-const connectRedis = require('../db/redis_connect').connect;
-const gameUtils = require('../db/game_utils');
+const connectRedis = require('../../db/redis_connect').connect;
+const gameUtils = require('../../db/game_utils');
 const messages = require('../messages');
-const deck = require('../deck');
+const deck = require('../../deck');
 const _ = require('underscore');
 var path = require('path');
-const logger = require('../utils/logger').logger(path.basename(__filename));
+const logger = require('../../utils/logger').logger(path.basename(__filename));
 
 let getGame = (roomNo) => {
   let redisClient = connectRedis();

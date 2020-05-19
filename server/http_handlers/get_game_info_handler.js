@@ -3,11 +3,11 @@
 const gameState = require('../game_state');
 const redisClient = require('../db/redis_connect').connect();
 const gameUtils = require('../db/game_utils');
-const getGame = require('../message_handlers/share_functions').getGame;
+const getGame = require('../niu/message_handlers/share_functions').getGame;
 const _ = require('underscore');
 var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
-const populateGame = require('../message_handlers/join_room_handler').populateGame;
+const populateGame = require('../niu/message_handlers/join_room_handler').populateGame;
 
 exports.handle = (req, res) => {
   var json = req.body;

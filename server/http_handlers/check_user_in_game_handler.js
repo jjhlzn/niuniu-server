@@ -6,7 +6,7 @@ var path = require('path');
 const logger = require('../utils/logger').logger(path.basename(__filename));
 const userDao = require('../db/user_dao');
 const connectRedis = require('../db/redis_connect').connectRedis;
-const getGame = require('../message_handlers/share_functions').getGame;
+const getGame = require('../niu/message_handlers/share_functions').getGame;
 /*
    reqJson = {
       userId:  ''

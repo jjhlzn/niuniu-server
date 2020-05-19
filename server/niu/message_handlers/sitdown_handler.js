@@ -1,14 +1,14 @@
 "use strict";
 
-const connectRedis = require('../db/redis_connect').connect;
-const gameUtils = require('../db/game_utils');
+const connectRedis = require('../../db/redis_connect').connect;
+const gameUtils = require('../../db/game_utils');
 const messages = require('../messages');
 const _ = require('underscore');
 const getGame = require('./share_functions').getGame;
 const createFailHandler = require('./share_functions').createFailHandler;
 var path = require('path');
-const logger = require('../utils/logger').logger(path.basename(__filename));
-const userDao = require('../db/user_dao');
+const logger = require('../../utils/logger').logger(path.basename(__filename));
+const userDao = require('../../db/user_dao');
 
 //那么用户一旦坐下，则用户的状态设置为在那个房间
 exports.sitdownHandler = (socket) => {

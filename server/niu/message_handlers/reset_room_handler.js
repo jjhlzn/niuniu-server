@@ -1,17 +1,17 @@
 "use strict";
 
-const connectRedis = require('../db/redis_connect').connect;
-const gameUtils = require('../db/game_utils');
+const connectRedis = require('../../db/redis_connect').connect;
+const gameUtils = require('../../db/game_utils');
 const messages = require('../messages');
-const gameState = require('../game_state');
-const deck = require('../deck');
+const gameState = require('../../game_state');
+const deck = require('../../deck');
 const _ = require('underscore');
 const createFailHandler = require('./share_functions').createFailHandler;
 var path = require('path');
-const logger = require('../utils/logger').logger(path.basename(__filename));
-const makeServerUrl = require('../db/game_server').makeServerUrl;
-const gameDao = require('../db/game_dao');
-const userDao = require('../db/user_dao');
+const logger = require('../../utils/logger').logger(path.basename(__filename));
+const makeServerUrl = require('../../db/game_server').makeServerUrl;
+const gameDao = require('../../db/game_dao');
+const userDao = require('../../db/user_dao');
 
 let resetRoomHandler = (socket) => {
   return (msg, Ack) => {
