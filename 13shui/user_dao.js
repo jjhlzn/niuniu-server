@@ -25,30 +25,24 @@ async function getUser(userId) {
   }
 }
 
-async function setUserInGame(userId, game) {
-  logger.debug("setUserInGame is called, userId = " + userId + ", roomNo = " + game.roomNo);
-  return setUserRoomInfo(userId, game, game.roomNo);
+async function setUserInGame(user, game) {
+  //logger.debug("setUserInGame is called, userId = " + userId + ", roomNo = " + game.roomNo);
+  //设置redis:  sitdownplayers:xxxxxx 
+  var client = connectRedis()
+  await client.hsetAsync(gameUtils.sitdownPlayersKey(game.roomNo), user.userId, user.seatNo)
+  user.currentRoomNo = game.roomNo
+  await client.setAsync(gameUtils.userKey(user.userId), JSON.stringify(user))
 }
 
-async function setUserLeaveGame(userId, game) {
-  logger.debug("setUserLeaveGame is called");
-  return setUserRoomInfo(userId, game, "")
+async function setUserLeaveGame(user, game) {
+  //logger.debug("setUserLeaveGame is called");
+  //这是redis: sitdownplayers:xxxxxx 
+  var client = connectRedis()
+  await client.hdelAsync(gameUtils.sitdownPlayersKey(game.roomNo), user.userId)
+  user.currentRoomNo = ''
+  await client.setAsync(gameUtils.userKey(user.userId), JSON.stringify(user))
 }
 
-async function setUserRoomInfo(userId, game, currentRoomNo) {
-  let redisClient = connectRedis();
-  return getUser(userId)
-    .then(user => {
-      user.currentRoomNo = currentRoomNo;
-      return redisClient.setAsync(gameUtils.userKey(userId), JSON.stringify(user))
-        .then( res => {
-          if (!res) {
-            return Promise.reject("在Redis中更新信息失败, userId = " + userId);
-          }
-          return game;
-        });
-      }); 
-}
 
 module.exports = {
   getUser: getUser,

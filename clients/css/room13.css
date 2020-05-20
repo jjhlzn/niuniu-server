@@ -1,0 +1,12 @@
+#container {
+  width: 80%;
+  margin: auto;
+}
+
+#buttonsDiv {
+  margin-top: 20px;
+}
+
+#buttonsDiv button {
+  margin-right: 10px;
+}

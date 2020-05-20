@@ -1,0 +1,34 @@
+<html>
+
+<head>
+  <link href="/room13.css?body=2" rel="stylesheet" >
+</head>
+
+<body>
+  <div id="container">
+
+    <div>
+      <div>
+        <span>用户ID</span> <input id="userId" type="text" >
+        <span>房间号</span> <input id="roomNo" type="text" >
+        <button id="setUserIdBtn">设置</button>
+      </div>
+
+      <div id="buttonsDiv">
+        <button id="joinBtn">加入</button> <button id="leaveBtn">离桌</button> <button>准备</button> <button>结束摆牌</button> 
+        <br>
+        <button id="loadRoomBtn">加载房间信息</button>
+      </div>
+
+      
+    </div>
+
+  </div>
+
+
+  <script src="/socket.io-client/dist/socket.io.js"></script> 
+  <script src="/jquery/dist/jquery.js"></script>
+  <script src="/js/room13.js"></script>
+</body>
+
+</html>

@@ -12,13 +12,27 @@ const GameState = require('../../13shui/game_state').GameState
 async function createThirteenShuiGame(userId, gameParameters) {
     //判断用户是否已经在游戏中
     //如果不在游戏中，则创建一个新的13道游戏，让创建该游戏的用户在游戏中，最后返回该游戏
-    let game = await checkUserInGame(userId)
-    if (!game) {
-        game = await _createGame(userId)
-        let client = await connectRedis()
-        client.setAsync(gameUtils.gameKey(game.roomNo), JSON.stringify(game))
-        await sitdown(userId, game)
+    let user = await userDao.getUser(userId)
+    if (!user) {
+        logger.error(`can't find ${userId}`)
+        return null
     }
+
+    if (user.currentRoomNo) {
+        let game = await gameDao.getGame(user.currentRoomNo)
+        if (game) {
+            return game
+        }
+    }
+
+    game = await _createGame(userId)
+
+    let client = await connectRedis()
+    client.setAsync(gameUtils.gameKey(game.roomNo), JSON.stringify(game))
+
+    user.seatNo = 'A'
+    await userDao.setUserInGame(user, game);
+    
     return game;
 }
 
@@ -81,8 +95,6 @@ async function joinGame(userId, roomNo) {
         }
     }
 
-
-
     game.players = await gameDao.getSitdownPlayerHash(roomNo)
 
     //返回这个房间
@@ -139,6 +151,38 @@ async function dismissRoom(userId, roomNo) {
     return result
 }
 
+async function leaveGame(userId, roomNo) {
+    //检查userid是否有效
+    let user = await userDao.getUser(userId)
+    if (!user) {
+        logger.error(`can't find ${userId}`)
+        return false
+    }
+
+    //检查roomNo是否有效
+    let game = await gameDao.getGame(roomNo)
+    if (!game) {
+        logger.error(`can't find room: ${roomNo}`)
+        return false
+    }
+
+    //设置user的信息
+    await userDao.setUserLeaveGame(user, game)
+    return true
+
+}
+
+async function getGame4Debug(roomNo) {
+    let game = await gameDao.getGame(roomNo)
+    if (!game) {
+        logger.error(`can't find room: ${roomNo}`)
+        return null
+    }
+
+    await gameDao.loadSitdownPlayerIds(game)
+    return game
+}
+
 async function checkUserInGame(userId) {
     let user = await userDao.getUser(userId)
     if (!user) {
@@ -173,19 +217,6 @@ async function _createGame(userId) {
     return game;
 }
 
-async function sitdown(userId, game) {
-    let client = await connectRedis()
-    await client.hsetAsync(gameUtils.sitdownPlayersKey(game.roomNo), game.creater, 'A')
-    await userDao.setUserInGame(game.creater, game);
-}
-
-async function _sitdown(userId, game, seatNo) {
-    logger.debug(`user[${userId}] game[${game.roomNo}] seat[${seatNo}]`)
-    let client = await connectRedis()
-    await client.hsetAsync(gameUtils.sitdownPlayersKey(game.roomNo), userId, seatNo)
-    await userDao.setUserInGame(userId, game);
-}
-
 async function sitdownOnAnySeat(user, game) {
     //获取座位，
     var emptySeatNos = await gameDao.getEmptySeats(game)
@@ -197,7 +228,8 @@ async function sitdownOnAnySeat(user, game) {
     //坐下设置
     //将game信息保存到redis中，
     //将user信息保存到redis中
-    await _sitdown(user.userId, game, seatNo)
+    user.seatNo = seatNo
+    await userDao.setUserInGame(user, game);
     
     return true
 } 
@@ -224,7 +256,9 @@ function getRandomRoomNo() {
 
 module.exports = {
     createThirteenShuiGame: createThirteenShuiGame,
-    joinGame: joinGame
+    joinGame: joinGame,
+    leaveGame: leaveGame,
+    getGame4Debug: getGame4Debug
 }
 
 /*

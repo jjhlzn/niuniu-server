@@ -24,6 +24,9 @@ function createJoinRoomHandler(socket, io){
             if (Ack) {
                 Ack(resp);
             }
+
+            //TODO: emit some player join
+
             socket.join(json.roomNo);
         }
     }
