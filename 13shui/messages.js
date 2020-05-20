@@ -3,6 +3,7 @@ module.exports = {
 
     GoToCompareCard: '13_CompareCards',
     GoToGameOver: '13_GoToGameOver',
+    RoomHasDismiss: '13_RoomHasDismiss',
   
     JoinRoom: '13_JoinRoom',
     LeaveRoom: '13_LeaveRoom',
@@ -14,6 +15,4 @@ module.exports = {
     SomeoneReady: '13_SomeoneReady',
     Ready: 'Ready',
     DismissRoom: '13_DismissRoom',
-    SomePlayerNotDelegate: "SomePlayerNotDelegate",  //手机切入后台 & 断线 
-    RoomHasDismissed: 'RoomHasDismissed',
   }

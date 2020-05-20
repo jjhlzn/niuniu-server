@@ -45,6 +45,7 @@ exports.handle = (req, res) => {
 
         getGame(resp.roomNo).then(game => {
           resp.serverUrl = game.serverUrl;
+          resp.gameType = game.gameType
           res.end(JSON.stringify(resp));
         }).catch(failHandler);
 

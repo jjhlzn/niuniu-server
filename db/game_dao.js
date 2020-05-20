@@ -86,9 +86,10 @@ let saveGameRecord = (game) => {
 
 
 
+
 module.exports = {
   getSitPlayerIds: getSitPlayerIds,
   getGame: getGame,
-  saveGameRecord: saveGameRecord
+  saveGameRecord: saveGameRecord,
 }
 

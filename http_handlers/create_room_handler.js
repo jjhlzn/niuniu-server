@@ -11,15 +11,16 @@ const gameDao = require('../db/game_dao');
 
 
 const niuHandler = require('./niu/niu_create_room_handler').handle
+const thirteenshuiHandler = require('./13/13_create_room_handler').handle
 
 exports.handle = (req, res) => {
   var json = req.body;
   let userId = json.userId;
 
-  if (json.gametype == 'thirteenshui') {
-
+  if (json.gameType == 'thirteenshui') {
+    thirteenshuiHandler(req, res)
   } else {
-    logger.debug("niu handler")
-     niuHandler(req, res)
+    
+    niuHandler(req, res)
   } 
 }
