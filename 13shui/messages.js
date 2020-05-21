@@ -13,6 +13,8 @@ module.exports = {
     FinishPlaceCards: '13_FinishPlaceCards',
     SomeoneFinishPlaceCards: '13_SomeoneFinishPlaceCards',
     SomeoneReady: '13_SomeoneReady',
-    Ready: 'Ready',
+    SomeoneOneline: '13_SomeoneOneline',
+    Ready: '13_Ready',
     DismissRoom: '13_DismissRoom',
+    NewRound: '13_NewRound',
   }

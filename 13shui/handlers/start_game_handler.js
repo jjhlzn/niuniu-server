@@ -3,25 +3,21 @@ const logger = require('../../utils/logger').logger(require('path').basename(__f
 const gameService = require('../../service/13/game_service')
 const messages = require('../messages')
 
-exports.dismissRoomHandler = (socket, io) => {
+exports.startGameHandler = async (socket, io) => {
     //1. 首先检查是否是房主发出的请求
     //2, 检查游戏的状态，只有未开始的能够解散
     //3. 如果都满足，解散房间。
-     return (msg, Ack) => {
-
+     return async (msg, Ack) => {
         json = JSON.parse(msg)
         let userId = json.userId
         let roomNo = json.roomNo
 
-        let resp = gameService.dismissRoom(userId, roomNo)
+        //set game state to redis and db
 
-        if (resp.result) {
-            //通知所有的客户端房间已经解散
-            io.to(roomNo).emit(messages.RoomHasDismiss, {roomNo: roomNo})
-            Ack({status: 0})
-        } else {
-            Ack({status: -1, errorMessage: resp.errorMessage})
-        }
+        //check all user is ready and all user is live 
 
+        //if yes, start new round 
+        let newRoundNotify = {}
+        io.to(roomNo).emit(messages.NewRound, newRoundNotify)
      }
 }

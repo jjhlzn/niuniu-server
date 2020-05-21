@@ -3,12 +3,15 @@
 const _ = require('underscore')
 const gameService = require('../../service/13/game_service')
 const logger = require('../../utils/logger').logger(require('path').basename(__filename))
+const messages = require('../messages')
 
 //处理13水离开房间的请求
 module.exports.leaveRoomHandler = (socket, io) => {
   return async (msg, Ack) =>  {
     logger.debug(msg)
     let json = JSON.parse(msg)
+    let userId = json.userId;
+    let roomNo = json.roomNo;
     
     let leaveResult = await gameService.leaveGame(json.userId, json.roomNo)
 
@@ -19,9 +22,11 @@ module.exports.leaveRoomHandler = (socket, io) => {
       if (Ack) {
         Ack({status: 0})
       }
-      //TODO: emit some player leave 
+      //emit some player leave 
+      io.to(roomNo).emit(messages.SomeoneLeaveRoom, {roomNo: roomNo, userId: json.userId})
 
-      //TODO: set socket not to accept message
+      //leave room
+      socket.leave(roomNo)
     }
   }
 }

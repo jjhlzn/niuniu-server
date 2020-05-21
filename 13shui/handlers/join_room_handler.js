@@ -2,6 +2,7 @@
 const _ = require('underscore');
 const gameService = require('../../service/13/game_service')
 const logger = require('../../utils/logger').logger(require('path').basename(__filename))
+const messages =  require('../messages')
 
 function createJoinRoomHandler(socket, io){
     return async (msg, Ack) => {
@@ -9,6 +10,7 @@ function createJoinRoomHandler(socket, io){
         logger.debug(msg)
         let json = JSON.parse(msg)
 
+        let roomNo = json.roomNo
         socket.roomNo = json.roomNo
         socket.userId = json.userId
 
@@ -24,8 +26,10 @@ function createJoinRoomHandler(socket, io){
             if (Ack) {
                 Ack(resp);
             }
-
-            //TODO: emit some player join
+        
+            let notify = {user: joinResult.user, roomNo: json.roomNo}
+            logger.debug(JSON.stringify(notify))
+            io.to(roomNo).emit(messages.SomeoneJoinRoom, notify)
 
             socket.join(json.roomNo);
         }

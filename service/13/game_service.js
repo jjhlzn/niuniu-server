@@ -1,4 +1,10 @@
-
+/**
+ * 为什么把在各个handler的逻辑放到gameService中？
+ * 好处？
+ * 1. 解耦req, res, 方便测试
+ * 坏处？
+ * 1. 这个类会很大，逻辑很复杂，
+ */
 const connectRedis = require('../../db/redis_connect').connect;
 const gameUtils = require('../../db/game_utils');
 const moment = require('moment')
@@ -42,7 +48,8 @@ async function createThirteenShuiGame(userId, gameParameters) {
 async function joinGame(userId, roomNo) {
     let result = {
         errorMsg: '',
-        game: null
+        game: null,
+        user: null
     }
 
     //检查userid是否有效
@@ -99,8 +106,13 @@ async function joinGame(userId, roomNo) {
 
     //返回这个房间
     result.game = game
+    result.user = user
 
     return result
+}
+
+async function canStartNewRound(roomNo) {
+    throw 'not implemented'
 }
 
   //1. 首先检查是否是房主发出的请求
@@ -172,6 +184,28 @@ async function leaveGame(userId, roomNo) {
 
 }
 
+//检查是否满足开局的条件，游戏已经开始，人数达标，所有都已经准备，所有人都在线
+async function checkAndStartRound(roomNo, io) {
+    //1. 检查游戏的状态
+
+    //2. 检查人数
+
+    //3. 检查所有人都准备
+
+    //4. 检查所有人在线
+
+    //发牌 并且 存储发牌的结果
+    //给玩家发送新一局的通知
+}
+
+async function checkAndSendCompareCardsNotify(roomNo,  io) {
+    //1. 检查是否所有人都已经发送了摆牌结束的消息
+    
+    //2. 如果是，服务器端进行比牌，并且把存储比牌的结果，
+
+    //2. 通知客户端进行比牌，通知内容包括：每个人的摆拍结果，以及分数，分数以服务器端为准
+}
+
 async function getGame4Debug(roomNo) {
     let game = await gameDao.getGame(roomNo)
     if (!game) {
@@ -212,8 +246,6 @@ async function _createGame(userId) {
     game.gameType = "thirteenshui";
     game.serverUrl = makeServerUrl(game)
     await generateRoomNo(game)
-
-    
     return game;
 }
 

@@ -1,3 +1,4 @@
+"use strict"
 
 const _ = require('underscore');
 const logger = require('../utils/logger').logger(require('path').basename(__filename));
