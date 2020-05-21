@@ -1,3 +1,4 @@
+"use strict"
 /**
  * 为什么把在各个handler的逻辑放到gameService中？
  * 好处？
@@ -66,9 +67,6 @@ async function joinGame(userId, roomNo) {
         return result
     }
 
-    //加载游戏在游戏中的信息
-    await gameDao.loadSitdownPlayerIds(game)
-
     //检查玩家是否已经在游戏中了
     var anotherGame = await checkUserInGame(userId)
     if(anotherGame) {
@@ -80,6 +78,9 @@ async function joinGame(userId, roomNo) {
             game = anotherGame
         }
     } else {
+        //设置玩家列表
+        game.players = await gameDao.getPlayerIds(roomNo)
+
         //检查游戏的状态是否还能加入，如果已经开始就不能了
         if (game.state != GameState.BeforeStart) {
             logger.debug(`game[${roomNo}] game state is wrong, game.state is ${game.state}`)
@@ -100,9 +101,27 @@ async function joinGame(userId, roomNo) {
             logger.debug(`user[${user.userId}] game[${roomNo}] sit down fail`)
             return result
         }
+       
     }
 
-    game.players = await gameDao.getSitdownPlayerHash(roomNo)
+     //更新玩家列表，把自己加上
+     game.players = await gameDao.getPlayerIds(roomNo)
+
+    var playerInfos = []
+    for(var i = 0; i < game.players.length; i++) {
+        playerInfos.push(await userDao.getUser(game.players[i]))
+    }
+    game.players = playerInfos
+
+    var playerSeatDict = await gameDao.getPlayerSeatDict(roomNo)
+    var readyUsers = await gameDao.getReadyUsers(roomNo)
+    var offlineUsers = await gameDao.getOfflineUsers(roomNo)
+
+    game.players.forEach(player => {
+        player.seatNo = playerSeatDict[player.userId]
+        player.isReady = _.contains(readyUsers, player.userId)
+        player.isOffline = _.contains(offlineUsers, player.userId)
+    });
 
     //返回这个房间
     result.game = game
@@ -153,7 +172,7 @@ async function dismissRoom(userId, roomNo) {
     }
 
     //设置每个游戏玩家离开房间，
-    let allPlayers = await gameDao.getSitPlayerIds(roomNo)
+    let allPlayers = await gameDao.getPlayerIds(roomNo)
     let allPromises = allPlayers.map(userId => userDao.setUserLeaveGame(userId, game));
     await Promise.all(allPromises)
     result.result = true

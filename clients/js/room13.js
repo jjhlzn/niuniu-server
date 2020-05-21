@@ -1,13 +1,11 @@
-var userId = "", roomNo = ""
 var socket = io();
 
 function checkUserIdAndRoomNo() {
-  if (userId == "" || roomNo == "") {
+  if ($('#userId').val() == "" || $('#roomNo').val() == "") {
     return false
   }
   return true;
 }
-
 
 $(document).ready(function(){
 
@@ -23,8 +21,8 @@ $(document).ready(function(){
     }
 
     let joinRoomReq = {
-      roomNo: roomNo,
-      userId: userId
+      roomNo: $('#roomNo').val(),
+      userId:  $('#userId').val()
     };
 
     socket.emit("13_JoinRoom", JSON.stringify(joinRoomReq), (msg) => {
@@ -40,8 +38,8 @@ $(document).ready(function(){
     }
 
     let leaveRoomReq = {
-      roomNo: roomNo,
-      userId: userId
+      roomNo: $('#roomNo').val(),
+      userId:  $('#userId').val()
     }
 
     socket.emit("13_LeaveRoom", JSON.stringify(leaveRoomReq), (msg) => {
@@ -49,5 +47,10 @@ $(document).ready(function(){
     })
 
   })
+
+  //set default
+  $('#userId').val('test2')
+  $('#roomNo').val('774482')
+
 
 })

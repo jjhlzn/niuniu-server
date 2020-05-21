@@ -130,6 +130,10 @@ module.exports = {
     return 'delegateplayers:' + roomNo;
   },
 
+  offlinePlayersKey: roomNo => {
+    return 'offlineplayers:' + roomNo
+  },
+
   userKey: userId => {
     return 'user:' + userId;
   },

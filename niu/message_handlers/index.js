@@ -51,6 +51,8 @@ const handleUserNotDelegate = require('./not_delegate_handler').handleUserNotDel
 const notDelegateHandler = require('./not_delegate_handler').notDelegateHandler;
 handlers['notDelegateHandler'] = notDelegateHandler;
 
+const offlineHanlder13 = require('../../13shui/handlers/offline_handler').offlineHandler
+
 var path = require('path');
 const logger = require('../../utils/logger').logger(path.basename(__filename)); 
 
@@ -70,9 +72,14 @@ function registerMessageHandlers(io, socket) {
     socket.on(messages.NotDelegate, notDelegateHandler(socket, io));
 
     socket.on('disconnect', () => {
-        logger.debug("a client disconnect");
-        if (socket.roomNo && socket.userId)
+        logger.debug("handle disconnect");
+
+        if (socket.roomNo && socket.userId && socket.gameType == 'thirteenshui') {
+          offlineHanlder13(io,socket.roomNo, socket.userId)
+        } else if (socket.roomNo && socket.userId) {
           handleUserDelegate(io, socket.roomNo, socket.userId)
+        }
+          
     });
 }
 
