@@ -140,6 +140,11 @@ async function joinGame(userId, roomNo) {
         }
         logger.debug("mycards: " + JSON.stringify(myCards))
         game.myCards = myCards
+
+        //check userid has finish place cards
+        if (_.contains(finishPlaceCardUsers, userId)) {
+            game.myResult = await gameDao.getPlaceCardsResultOfUser(roomNo, userId)
+        }
     }
 
     //返回这个房间
@@ -345,7 +350,7 @@ async function sitdownOnAnySeat(user, game) {
 
     var seatNo = emptySeatNos[0]
     //坐下设置
-    //将game信息保存到redis中，
+    //将game信息保存到redis中
     //将user信息保存到redis中
     user.seatNo = seatNo
     await userDao.setUserInGame(user, game);

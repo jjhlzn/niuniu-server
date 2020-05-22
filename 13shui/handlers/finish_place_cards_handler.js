@@ -57,7 +57,7 @@ async function checkAndSendCompareCardsNotify(roomNo,  io) {
    //3. 设置游戏状态
    let game = await gameDao.getGame(roomNo)
    game.currentRoundNo++
-   game.roundState = RoundState.BeforeState;
+   game.roundState = RoundState.BeforeStart;
    await gameDao.saveGame(game)
 
    //4. 通知客户端进行比牌，通知内容包括：每个人的摆拍结果，以及分数，分数以服务器端为准
@@ -73,5 +73,10 @@ async function checkAndSendCompareCardsNotify(roomNo,  io) {
    })
    logger.debug("send compare card notify")
    logger.debug(JSON.stringify(compareResult))
+
    io.to(roomNo).emit(messages.CompareCard, {result: compareResult})
+
+   //TODO: 清空ready users, finish place cards, player cards这三个hash
+
+
 }

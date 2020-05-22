@@ -170,6 +170,11 @@ async function getFinishPlaceCardUsers(roomNo) {
   return _.keys(dict)
 }
 
+async function getPlaceCardsResultOfUser(roomNo, userId) {
+  let dict = await getPlaceCardsResults(roomNo)
+  return dict[userId]
+}
+
 async function saveScores(roomNo, scores) {
    const client = connectRedis()
    let playerIds = _.keys(scores)
@@ -211,6 +216,7 @@ module.exports = {
   savePlaceCardsResult: savePlaceCardsResult,
   getPlaceCardsResults: getPlaceCardsResults,
   getFinishPlaceCardUsers: getFinishPlaceCardUsers,
+  getPlaceCardsResultOfUser: getPlaceCardsResultOfUser,
   saveScores: saveScores,
   getScores: getScores
 }
