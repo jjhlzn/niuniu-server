@@ -106,6 +106,10 @@ module.exports = {
     return 'room:' + roomNo;
   },
 
+  userKey: userId => {
+    return 'user:' + userId;
+  },
+
   sitdownPlayersKey: roomNo => {
     return 'sitdownplayers:' + roomNo;
   },
@@ -122,22 +126,29 @@ module.exports = {
     return 'showcardplayers:' + roomNo;
   },
 
-  readyPlayersKey: roomNo => {
-    return 'readyplayers:' + roomNo;
-  },
-
   delegatePlayersKey: roomNo => {
     return 'delegateplayers:' + roomNo;
+  },
+
+  readyPlayersKey: roomNo => {
+    return 'readyplayers:' + roomNo;
   },
 
   offlinePlayersKey: roomNo => {
     return 'offlineplayers:' + roomNo
   },
 
-  userKey: userId => {
-    return 'user:' + userId;
+  userCardsKey: roomNo => {
+    return 'userCards:' + roomNo
   },
 
+  userCardsResultKey: roomNo => {
+    return 'userCardsResult:' + roomNo
+  },
+
+  userScoresKey: roomNo => {
+    return 'userScores:' + roomNo
+  },
   /*
   robBankerTimeout: 10000,
   betTimeout: 6000,

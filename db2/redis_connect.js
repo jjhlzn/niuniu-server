@@ -49,8 +49,12 @@ function get_redis_client() {
 }
 
 
+let conn = null;
 module.exports = {
   connect: () => {
-    return redis.createClient(redisConfig)
+      if (conn == null || !conn.connected) {
+         conn = redis.createClient(redisConfig);
+      }
+      return conn;
   }
 }

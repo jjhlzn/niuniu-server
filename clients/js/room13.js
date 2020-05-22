@@ -48,9 +48,59 @@ $(document).ready(function(){
 
   })
 
+  $('#readyBtn').click(() => {
+    if (!checkUserIdAndRoomNo()) {
+      alert('必须提供userId和房间号')
+      return false;
+    }
+
+    let readyReq = {
+      roomNo: $('#roomNo').val(),
+      userId:  $('#userId').val()
+    }
+
+    socket.emit("13_Ready", JSON.stringify(readyReq), (msg) => {
+      console.log(msg)
+    })
+  })
+
+  $('#startBtn').click(() => {
+    if (!checkUserIdAndRoomNo()) {
+      alert('必须提供userId和房间号')
+      return false;
+    }
+
+    let startReq = {
+      roomNo: $('#roomNo').val(),
+      userId:  $('#userId').val()
+    }
+
+    socket.emit("13_StartGame", JSON.stringify(startReq), (msg) => {
+      console.log(msg)
+    })
+  })
+
+  $('#finishPlaceBtn').click(() => {
+    if (!checkUserIdAndRoomNo()) {
+      alert('必须提供userId和房间号')
+      return false;
+    }
+
+    let startReq = {
+      roomNo: $('#roomNo').val(),
+      userId:  $('#userId').val()
+    }
+
+    socket.emit("13_AutoPlaceCards", JSON.stringify(startReq), (msg) => {
+      console.log(msg)
+    })
+  })
+
+
+
   //set default
   $('#userId').val('test2')
-  $('#roomNo').val('774482')
+  $('#roomNo').val('346614')
 
 
 })

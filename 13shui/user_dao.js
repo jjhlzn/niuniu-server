@@ -35,11 +35,12 @@ async function setUserInGame(user, game) {
   await client.setAsync(gameUtils.userKey(user.userId), JSON.stringify(user))
 }
 
-async function setUserLeaveGame(user, game) {
+async function setUserLeaveGame(userId, game) {
   //logger.debug("setUserLeaveGame is called");
   //这是redis: sitdownplayers:xxxxxx 
   var client = connectRedis()
-  await client.hdelAsync(gameUtils.sitdownPlayersKey(game.roomNo), user.userId)
+  await client.hdelAsync(gameUtils.sitdownPlayersKey(game.roomNo), userId)
+  let user = await getUser(userId)
   user.currentRoomNo = ''
   await client.setAsync(gameUtils.userKey(user.userId), JSON.stringify(user))
 }

@@ -6,13 +6,16 @@ const gameService = require('../../service/13/game_service')
 const messages = require('../messages')
 const userDao = require('../user_dao')
 const gameDao = require('../game_dao')
-const connectRedis = require('../../db2/redis_connect')
+const connectRedis = require('../../db2/redis_connect').connect
 const GameState = require('../game_state').GameState
 const RoundState = require('../game_state').RoundState
+const gameUtils = require('../../db/game_utils')
 
-exports.readyHandler = async (socket, io) => {
-     return (msg, Ack) => {
-        json = JSON.parse(msg)
+exports.readyHandler =  (socket, io) => {
+     return async (msg, Ack) => {
+        logger.debug("ready request: " + msg)
+
+        let json = JSON.parse(msg)
         let userId = json.userId
         let roomNo = json.roomNo
 
@@ -46,10 +49,14 @@ exports.readyHandler = async (socket, io) => {
         }
 
         //把用户加入到ready的hash表中
-        var client = connectRedis();
-        await client.hsetAsync(gameUtils.readyPlayersKey(roomNo), userId, "")
+        await gameDao.ready(roomNo, userId)
 
-        io.to(roomNo).emit(messages.SomeoneReady, {roomNo: roomNo, userId: userId})
+        let notify = {roomNo: roomNo, userId: userId}
+        logger.debug("send someone ready notify: " + JSON.stringify(notify))
+
+        io.to(roomNo).emit(messages.SomeoneReady, notify)
         Ack({status: 0})
+
+        await gameService.checkAndStartRound(roomNo, io)
      }
 }

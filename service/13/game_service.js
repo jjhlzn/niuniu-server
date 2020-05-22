@@ -15,6 +15,9 @@ const makeServerUrl = require('../../db/game_server').makeServerUrl;
 const userDao = require('../../13shui/user_dao');
 const gameDao = require('../../13shui/game_dao');
 const GameState = require('../../13shui/game_state').GameState
+const RoundState = require('../../13shui/game_state').RoundState
+const deck = require('../../13shui/deck')
+const messages = require('../../13shui/messages');
 
 async function createThirteenShuiGame(userId, gameParameters) {
     //判断用户是否已经在游戏中
@@ -32,7 +35,7 @@ async function createThirteenShuiGame(userId, gameParameters) {
         }
     }
 
-    game = await _createGame(userId)
+    let game = await _createGame(userId)
 
     let client = await connectRedis()
     client.setAsync(gameUtils.gameKey(game.roomNo), JSON.stringify(game))
@@ -69,10 +72,11 @@ async function joinGame(userId, roomNo) {
 
     //检查玩家是否已经在游戏中了
     var anotherGame = await checkUserInGame(userId)
+    logger.debug("anotherGame: " + JSON.stringify(anotherGame))
     if(anotherGame) {
         if(anotherGame.roomNo != roomNo) {
             logger.error(`user[${userId}] has in game[${roomNo}]`)
-            result.errorMsg = "用户已经在游戏中了"
+            result.errorMsg = "用户已经在其他游戏中了"
             return result
         } else {
             game = anotherGame
@@ -103,9 +107,9 @@ async function joinGame(userId, roomNo) {
         }
        
     }
-
-     //更新玩家列表，把自己加上
-     game.players = await gameDao.getPlayerIds(roomNo)
+    logger.debug('load 游戏信息')
+    //更新玩家列表，把自己加上
+    game.players = await gameDao.getPlayerIds(roomNo)
 
     var playerInfos = []
     for(var i = 0; i < game.players.length; i++) {
@@ -116,12 +120,27 @@ async function joinGame(userId, roomNo) {
     var playerSeatDict = await gameDao.getPlayerSeatDict(roomNo)
     var readyUsers = await gameDao.getReadyUsers(roomNo)
     var offlineUsers = await gameDao.getOfflineUsers(roomNo)
+    var finishPlaceCardUsers = await gameDao.getFinishPlaceCardUsers(roomNo)
 
     game.players.forEach(player => {
         player.seatNo = playerSeatDict[player.userId]
         player.isReady = _.contains(readyUsers, player.userId)
         player.isOffline = _.contains(offlineUsers, player.userId)
+        player.isFinishPlaceCard = _.contains(finishPlaceCardUsers, player.userId)
     });
+
+    logger.debug("game.roundState = " + game.roundState)
+    logger.debug(game.roundState == RoundState.PlacingCards)
+    if (game.roundState == RoundState.PlacingCards) {
+        logger.debug('获取我的牌信息')
+        let playerCards = await gameDao.getPlayerCards(roomNo)
+        let myCards = playerCards[userId]
+        if (!myCards || myCards.length != 13) {
+            logger.error("fetch my cards error")
+        }
+        logger.debug("mycards: " + JSON.stringify(myCards))
+        game.myCards = myCards
+    }
 
     //返回这个房间
     result.game = game
@@ -130,9 +149,6 @@ async function joinGame(userId, roomNo) {
     return result
 }
 
-async function canStartNewRound(roomNo) {
-    throw 'not implemented'
-}
 
   //1. 首先检查是否是房主发出的请求
   //2, 检查游戏的状态，只有未开始的能够解散
@@ -198,32 +214,82 @@ async function leaveGame(userId, roomNo) {
     }
 
     //设置user的信息
-    await userDao.setUserLeaveGame(user, game)
+    await userDao.setUserLeaveGame(user.userId, game)
     return true
 
 }
 
 //检查是否满足开局的条件，游戏已经开始，人数达标，所有都已经准备，所有人都在线
 async function checkAndStartRound(roomNo, io) {
+    let game = await gameDao.getGame(roomNo)
+    let getPlayerIds = gameDao.getPlayerIds(roomNo)
+    let getReadyPlayerIds = gameDao.getReadyUsers(roomNo)
+    let getOfflinePlayerIds = gameDao.getOfflineUsers(roomNo)
+
+    let allPromises = [getPlayerIds, getReadyPlayerIds, getOfflinePlayerIds]
+    let resultSet = await Promise.all(allPromises)
+
+    let playerIds = resultSet[0]
+    let readyPlayerIds = resultSet[1]
+    let offlinePlayerIds = resultSet[2]
+    game.players = playerIds
+
+    logger.debug(JSON.stringify(game))
     //1. 检查游戏的状态
+    if (game.state != GameState.Playing) {
+        logger.debug("game state is not playing")
+        return;
+    }
+
+    logger.debug(game.roundState)
+    logger.debug(game.roundState != RoundState.BeforeStart)
+    if (game.roundState != RoundState.BeforeStart) {
+        logger.debug("roundState is not BeforeStart")
+        return;
+    }
 
     //2. 检查人数
+    if (playerIds.length < 2) {
+        logger.debug("players count is less than 2")
+        return
+    }
 
     //3. 检查所有人都准备
+    let everyoneIsReady = true
+    playerIds.forEach(playerId => {
+        if (!_.contains(readyPlayerIds, playerId)) {
+            everyoneIsReady = false
+        }
+    })
+    if (!everyoneIsReady) {
+        logger.debug("not everyone is ready")
+        logger.debug("ready users: " + readyPlayerIds)
+        return
+    }
 
     //4. 检查所有人在线
+    if (offlinePlayerIds.length != 0) {
+        logger.debug("not everyone is online")
+        logger.debug("offline users: " + offlinePlayerIds)
+        return
+    }
 
+    //重新设置状态
+    game.state = GameState.Playing
+    game.roundState = RoundState.PlacingCards
     //发牌 并且 存储发牌的结果
-    //给玩家发送新一局的通知
-}
-
-async function checkAndSendCompareCardsNotify(roomNo,  io) {
-    //1. 检查是否所有人都已经发送了摆牌结束的消息
+    let playerCardDict = deal(game)
     
-    //2. 如果是，服务器端进行比牌，并且把存储比牌的结果，
-
-    //2. 通知客户端进行比牌，通知内容包括：每个人的摆拍结果，以及分数，分数以服务器端为准
+    await gameDao.savePlayerCards(roomNo, playerCardDict)
+    await gameDao.saveGame(game)
+    
+    //给玩家发送新一局的通知
+    logger.debug("send new round notify to everyone")
+    let notify = {status: 0, playerCards: playerCardDict}
+    io.to(roomNo).emit(messages.NewRound, notify);
 }
+
+
 
 async function getGame4Debug(roomNo) {
     let game = await gameDao.getGame(roomNo)
@@ -262,7 +328,9 @@ async function _createGame(userId) {
     game.rounds = [];
     game.scores = {};
     game.state = GameState.BeforeStart;
-    game.gameType = "thirteenshui";
+    game.roundState = RoundState.BeforeStart;
+    game.gameType = "thirteenshui"; 
+    
     game.serverUrl = makeServerUrl(game)
     await generateRoomNo(game)
     return game;
@@ -297,6 +365,7 @@ async function generateRoomNo(game) {
         })
 }
 
+
 function getRandomRoomNo() {
     let str = "";
     for (var i = 0; i < 6; i++) {
@@ -305,13 +374,28 @@ function getRandomRoomNo() {
     return str;
 }
 
+//发牌的一个Dict
+function deal(game) {
+    let rs = deck.deal(game)
+    let players = game.players
+
+    let playerCardDict = {}
+    for(var i = 0; i < players.length; i++) {
+        playerCardDict[players[i]] = rs[i]
+    }
+    return playerCardDict
+}
+
 module.exports = {
     createThirteenShuiGame: createThirteenShuiGame,
     joinGame: joinGame,
     leaveGame: leaveGame,
-    getGame4Debug: getGame4Debug
+    getGame4Debug: getGame4Debug,
+    checkAndStartRound: checkAndStartRound
 }
 
+//dismissRoom('7654321', '774482').then(result => console.log(result))
+//createThirteenShuiGame('7654321', {}).then(game => {console.log(game) })
 /*
 createThirteenShuiGame('7654321', {}).then(game => {
     console.log(game)

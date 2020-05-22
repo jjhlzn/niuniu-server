@@ -1,8 +1,8 @@
 
 module.exports = {
 
-    GoToCompareCard: '13_CompareCards',
-    GoToGameOver: '13_GoToGameOver',
+    CompareCard: '13_CompareCards',
+    GameOver: '13_GoToGameOver',
     RoomHasDismiss: '13_RoomHasDismiss',
   
     JoinRoom: '13_JoinRoom',
@@ -18,4 +18,6 @@ module.exports = {
     Ready: '13_Ready',
     DismissRoom: '13_DismissRoom',
     NewRound: '13_NewRound',
+
+    AutoPlaceCards: '13_AutoPlaceCards'
   }

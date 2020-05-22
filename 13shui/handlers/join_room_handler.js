@@ -7,8 +7,7 @@ const gameDao = require('../game_dao')
 
 function createJoinRoomHandler(socket, io){
     return async (msg, Ack) => {
-        logger.debug("13shui join room")
-        logger.debug(msg)
+        logger.debug("join room: " + msg)
         let json = JSON.parse(msg)
 
         let roomNo = json.roomNo
@@ -20,25 +19,30 @@ function createJoinRoomHandler(socket, io){
 
         let joinResult = await gameService.joinGame(json.userId, json.roomNo)
 
+        let resp = {}
         //出错了
         if (!joinResult.game) {
             logger.error('error happened')
             Ack({status: -1});
+            return resp
         } else {
             await gameDao.online(roomNo, userId)
 
-            let resp = _.extend({status: 0}, joinResult.game);
+            resp = _.extend({status: 0}, joinResult.game);
             logger.debug("join room response: " + JSON.stringify(resp));
             if (Ack) {
                 Ack(resp);
             }
         
             let notify = {user: joinResult.user, roomNo: json.roomNo}
-            logger.debug(JSON.stringify(notify))
+            //logger.debug(JSON.stringify(notify))
             io.to(roomNo).emit(messages.SomeoneJoinRoom, notify)
 
             socket.join(json.roomNo);
         }
+
+        await gameService.checkAndStartRound(roomNo, io)
+        return resp
     }
 }
 
