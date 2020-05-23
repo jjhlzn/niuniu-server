@@ -82,10 +82,6 @@ async function online(roomNo, userId) {
   await connectRedis().hdelAsync(gameUtils.offlinePlayersKey(roomNo), userId, "")
 }
 
-//设置用户已经摆牌结束，将这些信息存储到redis
-async function  finishPlaceCards(roomNo, userId, cardsArray, specialCardType) {
-  throw 'not implemented'
-}
 
 //获取房间已经ready的用户userId列表
 async function getReadyUsers(roomNo) {
@@ -97,9 +93,12 @@ async function getReadyUsers(roomNo) {
   return _.keys(hash)
 }
 
-//房间的人是否所有人都已经准备
-async function isAllUsersReady(roomNo) {
-  throw 'not implemented'
+async function clearReadyUsers(roomNo) {
+  const client = connectRedis()
+  let playerIds = await getReadyUsers(roomNo)
+  for(var i = 0; i < playerIds.length; i++) {
+    await client.hdelAsync(gameUtils.readyPlayersKey(roomNo), playerIds[i])
+  }
 }
 
 //获取房间所有离线的用户列表
@@ -112,10 +111,6 @@ async function getOfflineUsers(roomNo) {
   return _.keys(hash)
 }
 
-//是否所有人都在线
-async function isAllUsersOnline(roomNo) {
-  throw 'not implemented'
-}
 
 async function savePlayerCards(roomNo, playerCardDict) {
   const client = connectRedis()
@@ -123,6 +118,15 @@ async function savePlayerCards(roomNo, playerCardDict) {
   for(var i = 0; i < playerIds.length; i++) {
     await client.hsetAsync(gameUtils.userCardsKey(roomNo), playerIds[i], 
       JSON.stringify(playerCardDict[playerIds[i]]))
+  }
+}
+
+async function clearPlayerCards(roomNo) {
+  const client = connectRedis()
+  let playerIds = await getPlayerIds(roomNo)
+  for(var i = 0; i < playerIds.length; i++) {
+    //logger.debug("del player cards for user " + playerIds[i])
+    await client.hdelAsync(gameUtils.userCardsKey(roomNo), playerIds[i])
   }
 }
 
@@ -143,8 +147,6 @@ async function getPlayerCards(roomNo) {
   return hash
 }
 
-
-
 //保存摆道结果
 async function savePlaceCardsResult(userId, roomNo, specialCardType, cardsResult) {
   const client = connectRedis()
@@ -163,6 +165,14 @@ async function getPlaceCardsResults(roomNo) {
     result[key] = JSON.parse(hash[key])
   })
   return result
+}
+
+async function clearPlaceCardsResults(roomNo) {
+  const client = connectRedis()
+  let playerIds = await getPlayerIds(roomNo)
+  for(var i = 0; i < playerIds.length; i++) {
+    await client.hdelAsync(gameUtils.userCardsResultKey(roomNo), playerIds[i])
+  }
 }
 
 async function getFinishPlaceCardUsers(roomNo) {
@@ -209,12 +219,20 @@ module.exports = {
   online: online,
   offline: offline,
   ready: ready,
+
   getReadyUsers: getReadyUsers,
+  clearReadyUsers: clearReadyUsers,
+
   getOfflineUsers: getOfflineUsers,
+
   savePlayerCards: savePlayerCards,
   getPlayerCards: getPlayerCards,
+  clearPlayerCards: clearPlayerCards,
+
   savePlaceCardsResult: savePlaceCardsResult,
   getPlaceCardsResults: getPlaceCardsResults,
+  clearPlaceCardsResults: clearPlaceCardsResults,
+
   getFinishPlaceCardUsers: getFinishPlaceCardUsers,
   getPlaceCardsResultOfUser: getPlaceCardsResultOfUser,
   saveScores: saveScores,

@@ -26,6 +26,7 @@ var redisConfig = {
     detect_buffers: true, 
     host: redisUrl, 
     port: port,
+    /*
     retry_strategy: function (options) {
         if (options.error != null && options.error.code === 'ECONNREFUSED') {
             // End reconnecting on a specific error and flush all commands with a individual error
@@ -41,7 +42,7 @@ var redisConfig = {
         }
         // reconnect after
         return Math.max(options.attempt * 100, 3000);
-    }
+    } */
 };
 
 function get_redis_client() {

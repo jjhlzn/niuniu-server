@@ -96,8 +96,6 @@ $(document).ready(function(){
     })
   })
 
-
-
   //set default
   $('#userId').val('test2')
   $('#roomNo').val('346614')

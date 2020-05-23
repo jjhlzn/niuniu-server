@@ -16,6 +16,22 @@ exports.finishPlaceCardsHandler = (socket, io) => {
          let specialCardType = json.specialCardType
          let cardsResult = json.cardsResult
 
+         //检查userid是否有效
+         let user = await userDao.getUser(userId)
+         if (!user) {
+               logger.error(`can't find ${userId}`)
+               Ack({status: -1})
+               return
+         }
+
+         //检查roomNo是否有效
+         let game = await gameDao.getGame(roomNo)
+         if (!game) {
+               logger.error(`can't find room: ${roomNo}`)
+               Ack({status: -1})
+               return
+         }
+
          //TODO: 检查参数和游戏的状态
          await gameDao.savePlaceCardsResult(userId, roomNo, specialCardType, cardsResult)
          Ack({status: 0})
@@ -76,7 +92,8 @@ async function checkAndSendCompareCardsNotify(roomNo,  io) {
 
    io.to(roomNo).emit(messages.CompareCard, {result: compareResult})
 
-   //TODO: 清空ready users, finish place cards, player cards这三个hash
-
-
+   //清空ready users, finish place cards, player cards这三个hash
+   await gameDao.clearReadyUsers(roomNo)
+   await gameDao.clearPlayerCards(roomNo)
+   await gameDao.clearPlaceCardsResults(roomNo)
 }
