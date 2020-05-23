@@ -54,6 +54,12 @@ module.exports = {
       if (conn == null || !conn.connected) {
          conn = redis.createClient(redisConfig);
       }
+
+      conn.on('connect', function () {
+        var socket = conn.stream
+        socket.setKeepAlive(true, 30 * 1000)
+      })
+
       return conn;
   }
 }

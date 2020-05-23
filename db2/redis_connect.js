@@ -26,7 +26,7 @@ var redisConfig = {
     detect_buffers: true, 
     host: redisUrl, 
     port: port,
-    /*
+    
     retry_strategy: function (options) {
         if (options.error != null && options.error.code === 'ECONNREFUSED') {
             // End reconnecting on a specific error and flush all commands with a individual error
@@ -36,13 +36,13 @@ var redisConfig = {
             // End reconnecting after a specific timeout and flush all commands with a individual error
             return new Error('Retry time exhausted');
         }
-        if (options.times_connected > 10) {
+        if (options.times_connected > 20) {
             // End reconnecting with built in error
             return undefined;
         }
         // reconnect after
         return Math.max(options.attempt * 100, 3000);
-    } */
+    } 
 };
 
 function get_redis_client() {
@@ -56,6 +56,13 @@ module.exports = {
       if (conn == null || !conn.connected) {
          conn = redis.createClient(redisConfig);
       }
+
+
+      conn.on('connect', function () {
+        var socket = conn.stream
+        socket.setKeepAlive(true, 30 * 1000)
+      })
+      
       return conn;
   }
 }
