@@ -97,8 +97,8 @@ $(document).ready(function(){
   })
 
   //set default
-  $('#userId').val('test2')
-  $('#roomNo').val('346614')
+  $('#userId').val('628363')
+  $('#roomNo').val('266875')
 
 
 })
