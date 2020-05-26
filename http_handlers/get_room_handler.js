@@ -32,6 +32,7 @@ exports.handle = (req, res) => {
     resp.serverUrl =  game.serverUrl; 
     resp.isExist = true;
     resp.roomNo = json.roomNo;
+    resp.gameType = game.gameType
     res.end(JSON.stringify(resp));;
   }
 

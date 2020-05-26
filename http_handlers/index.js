@@ -9,7 +9,7 @@ const getGameInfoHanlde = require('./get_game_info_handler').handle;
 const checkIosAuditVersionHanlde = require('./check_ios_audit_version_handler').handle;
 const auditLoginHandler = require('./audit_login_handler').handle;
 const getGame4DebugHanlder = require('./get_game_4_debug_handler').handle
-const joinGameHandle4Debug = require('./13/join_room_handler_debug').handle
+const joinRoomHandle = require('./13/join_room_handler').handle
 const express = require('express');
 
 module.exports = {
@@ -30,6 +30,6 @@ module.exports = {
         app.use(express.static('./clients/css'));
         app.use(express.static('node_modules'));
         app.use('/getgame4debug', getGame4DebugHanlder)
-        app.use('/joingame4debug', joinGameHandle4Debug)
+        app.use('/joinroom', joinRoomHandle)
     }
 }
