@@ -53,6 +53,39 @@ function compareCards(cardsResult) {
   return scoreResults
 }
 
+function compareCards1(result1, result2) {
+  if (result1.specialCardType && result2.specialCardType) {
+    var score = getSpecialCardTypeDaos(result1.specialCardType) 
+            - getSpecialCardTypeDaos(result2.specialCardType)
+    return [score, -score]
+  }
+
+  if (result1.specialCardType) {
+    var score = getSpecialCardTypeDaos(result1.specialCardType)
+    return [score, -score]
+  }
+
+  if (result2.specialCardType) {
+    var score= getSpecialCardTypeDaos(result2.specialCardType)
+    return [-score, score]
+  }
+
+  var score = 0
+  for(var i = 0; i < 3; i++) {
+    var score1 = compareDao(i, result1.cardsResult[i], result2.cardsResult[i])
+    score += score1
+  }
+  return [score, -score]
+}
+
+function  getSpecialCardTypeDaos(specialCardType) {
+  return 0
+}
+
+function compareDao(daoNo, cards1, cards) {
+  return 0
+}
+
 
 module.exports = {
   deal: deal,

@@ -1,0 +1,8 @@
+
+class OnePairCardType {
+    
+}
+
+class TwoPairCardType {
+    
+}
